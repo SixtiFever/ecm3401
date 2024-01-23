@@ -18,3 +18,7 @@
 - Cafe location data collected via signup form and geolocated for pin-pointing on map
 - Guide: https://blog.logrocket.com/react-native-geolocation-complete-tutorial/
 
+##### 23/01/2024
+- Implemented logout functionality in Cafe Settings
+- Correctly pulling data and populating cafe Dashboard
+- Conditionals configured based on if a promotion is currently active

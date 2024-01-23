@@ -33,6 +33,7 @@ const CafeSignup = ({ navigation }) => {
                 'currentPromotion': {
                     'title': 'Buy 8 get a free coffee',
                     'scansNeeded' : 8,
+                    'reward': 'single shot free coffee',
                     'customerScans': 0,
                     'customerRedeems': 0,
                     'scansPerDay': 0,

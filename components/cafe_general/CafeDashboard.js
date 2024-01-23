@@ -9,6 +9,12 @@ const CafeDashboard = ({navigation}) => {
     const [cafe, setCafe] = useState(null);
 
     useEffect(() => {
+
+        navigation.setOptions({
+            'headerRight': () => (
+                <Button title='Settings' onPress={() => navigation.navigate('Settings')} />
+            )
+        })
         
         getAndSetCafeData(setCafe);
 
@@ -18,7 +24,10 @@ const CafeDashboard = ({navigation}) => {
 
     return (
         <View style={styles.container}>
-            { cafe && <CafeData cafe={cafe} /> }
+            <View style={styles.dataContainer}>
+                { cafe && <CurrentPromotionData currentPromotion={cafe.currentPromotion} /> }
+                { cafe && <CafeTotalData cafe={cafe} /> }
+            </View>
             <View style={styles.buttonContainer}>
                 <Button title='Create promotion' onPress={() => console.log('Create promotion pressed')} />
                 <Button title='End promotion' onPress={() => console.log('Promotion ended')} />
@@ -47,25 +56,40 @@ function getAndSetCafeData(setCafe) {
 }
 
 
-const CafeData = ({cafe}) => {
-    console.log(cafe);
+const CafeTotalData = ({cafe}) => {
     return (
-        <View style={styles.dataContainer}>
-            <View>
-                    <Text>Active promotion: {cafe.currentPromotion.title}</Text>
-                    <Text>Scans: {cafe.currentPromotion.customerScans}</Text>
-                    <Text>Redeems: {cafe.currentPromotion.customerRedeems}</Text>
-                    <Text>Scans per day: {cafe.currentPromotion.scansPerDay}</Text>
-                    <Text>Redeems per day: {cafe.currentPromotion.redeemsPerDay}</Text>
-                </View>
-                <View>
-                    <Text>Total stats</Text>
-                    <Text>Customers: {Object.keys(cafe.customers).length}</Text>
-                    <Text>Total scans: {cafe.scans}</Text>
-                    <Text>Total redeems: {cafe.redeems}</Text>
-                </View>
-        </View>
+        <View>
+            <Text>Total stats</Text>
+            <Text>Customers: {Object.keys(cafe.customers).length}</Text>
+            <Text>Total scans: {cafe.scans}</Text>
+            <Text>Total redeems: {cafe.redeems}</Text>
+        </View>     
     )
+}
+
+const CurrentPromotionData = ({currentPromotion}) => {
+
+    if ( Object.keys(currentPromotion).length > 0 ) {
+
+        return (
+            <View>
+                <Text>Active promotion: {currentPromotion.title}</Text>
+                <Text>Scans: {currentPromotion.customerScans}</Text>
+                <Text>Redeems: {currentPromotion.customerRedeems}</Text>
+                <Text>Scans per day: {currentPromotion.scansPerDay}</Text>
+                <Text>Redeems per day: {currentPromotion.redeemsPerDay}</Text>
+                <Text>Reward: {currentPromotion.reward}</Text>
+                <Text>Scans needed: {currentPromotion.scansNeeded}</Text>
+            </View>
+        )
+
+        } else {
+            return (
+                <View>
+                    <Text>No promotion active</Text>
+                </View>
+            )
+        }
 }
 
 
