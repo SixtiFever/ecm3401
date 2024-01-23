@@ -1,0 +1,20 @@
+##### 21/01/2024
+- Installed dependencies: firebase, navigation
+    - Must be firebase@10.7.1
+- Created Cafe Login and Signup screens.
+
+##### 22/01/2024
+- Created Cafe Dashboard screen
+- generated QR link via api.qrserver.com + shop_name
+- Generated buffer array from QR image returned from api.qrserver.com
+- stored cafe details, qr link in cafe object
+
+# authentication for cafes
+- Signup and login creating and logging in cafe
+- Dashboard pulling correct cafe information
+
+# Geolocation
+- Needed for promximity based push notifications for users
+- Cafe location data collected via signup form and geolocated for pin-pointing on map
+- Guide: https://blog.logrocket.com/react-native-geolocation-complete-tutorial/
+
