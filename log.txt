@@ -22,3 +22,6 @@
 - Implemented logout functionality in Cafe Settings
 - Correctly pulling data and populating cafe Dashboard
 - Conditionals configured based on if a promotion is currently active
+
+##### 24/01/2024
+- Cafe signup correctly authenticating users and adding user document to users collection

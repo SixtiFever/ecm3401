@@ -25,7 +25,7 @@ const CafeSignup = ({ navigation }) => {
                 'cafePassword': cafePassword,
                 'address': address,
                 'postcode': postcode,
-                'qrLink': generateQRLink(cafeName),
+                'qrLink': generateQRLink(cafeEmail.toLowerCase()),
                 'customers': {},
                 'redeems': 0,
                 'scans': 0,
