@@ -25,3 +25,11 @@
 
 ##### 24/01/2024
 - Cafe signup correctly authenticating users and adding user document to users collection
+
+
+#### 25/01/2024
+- Created loyalty card in both user and cafe document -> For easier communication between cafe data and 
+their customers loyalty cards. Will enable dynamic data pulling.
+- Needed loyalty cards in User docs for rendering to their Home page.
+- Needed loyalty card info in cafe doc for easier monitoring most loyal customers and rolling out
+promotion changes to all users currently with loyalty cards.
