@@ -19,26 +19,30 @@ const Scanner = ({navigation}) => {
     const handleBarCodeScanned = async ({ type, data }) => {
         setScanned(true);
 
-        /*
-        - Check if the user has a virtual card for the cafe
-            - True -> Increment card by 1
-            - False -> Pull cafe data from 'cafes' and create field in user document
-        */
-
+        // if user already has a loyalty card with the cafe...
         if ( await hasUserVisitedCafeBefore(data) ) {
+             try {
 
-            console.log('Returning customer');
-            await updateLoyaltyCard(data);
-            await updateCafeDoc(data);
+                // update loyalty card in the user document
+                await updateLoyaltyCard(data);
+
+                // update data in cafe document: Global, current promotion, customer
+                await updateCafeDoc(data);
+
+             } catch(err) {
+                console.log('<Scanner.js/handleBarCodeScanned> Error upon recurring scan: ' + err);
+             }
+
         } else {
-            handleFirstScan(data).then(() => {
-                console.log('Handle first scan finished');
-            }).catch(err => {
+
+            try {
+                await handleFirstScan(data);
+            } catch (err) {
                 console.log('Error with handleFirstScan: ' + err);
-            })
+            }
         }
 
-        alert(`${data} has been scanned!`);
+        alert(`Scanned`);
     };
 
     if (permission) {
