@@ -19,7 +19,7 @@ const UserCards = ({navigation}) => {
         <View style={styles.container}>
             { console.log(cards) }
             <View>
-                { cards && <MapCards data={cards} /> }
+                {/* { cards && <MapCards data={cards} /> } */}
             </View>
             <View>
                 <Button title="Scan" onPress={() => handleToScanner(navigation)} />
