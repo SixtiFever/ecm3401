@@ -177,7 +177,7 @@ async function updateLoyaltyCard(cafeEmail) {
                 } else {
                     transaction.set(dRef, { cards: { [cafeEmail]: { currentScans: newVal } } }, {merge: true} );
                 }
-                
+                transaction.set(dRef, { cards: { [cafeEmail]: { 'mostRecent': new Date().getTime() } } }, {merge: true} );
             }
         });
     } catch(err) {
