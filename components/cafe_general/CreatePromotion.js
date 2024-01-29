@@ -28,6 +28,7 @@ const CreatePromotion = ({route, navigation}) => {
         'title': title,
         'scansNeeded' : scansNeeded,
         'reward': reward,
+        'category': value,
         'customerScans': 0,
         'customerRedeems': 0,
         'scansPerDay': 0,
@@ -65,7 +66,7 @@ const CreatePromotion = ({route, navigation}) => {
                 </View>
             </View>
             
-            <Pressable style={styles.launchPromotion} onPress={() => handleLaunchPromotion(outgoingPromotion)}>
+            <Pressable style={styles.launchPromotion} onPress={() => handleLaunchPromotion(outgoingPromotion, promotion, navigation)}>
                 <Text style={styles.launchBtnText}>Launch Promotion</Text>
             </Pressable>
 
@@ -77,7 +78,7 @@ const CreatePromotion = ({route, navigation}) => {
 /*
 @param1 -> outData -> Data of the promotion being finished. Store in cafe.previousPromotions
 */
-function handleLaunchPromotion(oldData) {
+function handleLaunchPromotion(oldData, newPromotion, nav) {
     /*
     - Calculate days ran for ending promotion
     - Save promotion to cafe.previousPromotions
@@ -86,22 +87,43 @@ function handleLaunchPromotion(oldData) {
     - Populate cafe.currentPromotion with new promotion details
     */
     
-    archivePreviousPromotion(oldData);
+    archivePreviousPromotion(oldData, newPromotion).then( newPromo => {
+        createNewPromotion(newPromo);
+        // nav.reset({
+        //     index: 0,
+        //     routes: [{name: 'Your Cafe'}],
+        // })
+        nav.navigate('Your Cafe');
+    }).catch(err => {
+        console.log('<CreatePromotion.js/handleLaunchPromotion> error: ' + err);
+    });
     
     
 }
 
-function archivePreviousPromotion(oldData){
+async function archivePreviousPromotion(oldData, newPromo){
     const {daysRun, endDate} = calculatePromotionTimeInDays(oldData.startDate);
 
     const cRef = collection(firestore, 'cafes');
     const dRef = doc(cRef, auth.currentUser.email);
     oldData['endDate'] = endDate;
     oldData['daysRun'] = daysRun;
-    setDoc(dRef, { previousPromotions: { [oldData.startDate]: oldData } }, { merge: true }).then(() => {
-        console.log('Added to previous promotions');
+    await setDoc(dRef, { previousPromotions: { [oldData.startDate]: oldData } }, { merge: true }).then(() => {
+
     }).catch(err => {
-        console.log('Error archiving promotion: ' + err);
+        console.log('<CreatePromotion.js/archivePreviousPromotion> Error archiving promotion: ' + err);
+    });
+    return newPromo;
+}
+
+function createNewPromotion(promo) {
+    const cRef = collection(firestore, 'cafes');
+    const dRef = doc(cRef, auth.currentUser.email);
+
+    setDoc(dRef, { currentPromotion: promo }, {merge: true}).then(() => {
+        console.log('Successfully implemeted new promotion');
+    }).catch(err => {
+        console.log('<CreatePromotion.js/setNewPromotion> error: ' + err);
     });
 }
 

@@ -42,7 +42,12 @@ const ComponentStack = () => {
 const CafeScreenStack = () => {
     return (
         <Stack.Navigator>
-            <Stack.Screen name='Your Cafe' component={CafeDashboard} options={{ headerRight: () => <Button title='Settings' onPress={null} /> }} />
+            <Stack.Screen 
+                name='Your Cafe' 
+                component={CafeDashboard} 
+                options={{ 
+                    headerRight: () => <Button title='Settings' onPress={null} />, 
+                    headerLeft: () => null }} />
             <Stack.Screen name='Create Promotion' component={CreatePromotion}  />
             <Stack.Screen name='Settings' component={CafeSettings} />
         </Stack.Navigator>
