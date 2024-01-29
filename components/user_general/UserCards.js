@@ -23,9 +23,6 @@ const UserCards = ({navigation}) => {
         cafeDocumentListener(cards);
     }
 
-    
-    
-
     return (
         <View style={styles.container}>
 
@@ -114,15 +111,16 @@ cards for all users with the cafes loyalty card.
 */
 function cafeDocumentListener(cards) {
     const cafeEmails = Object.keys(cards);
+    if ( cafeEmails.length < 1 ) return;
     const cRef = collection(firestore, 'cafes');
-    const dRef = doc(cRef, cafeEmails[0] );
-    onSnapshot(dRef, (snap) => {
-        console.log('Cafe document has been changed');
-        updateCard(snap.data());
-    });
+    for ( let i = 0; i < cafeEmails.length; i++ ) {
+        let docID = cafeEmails[i];
 
-    // const userCollection = collection(firestore, 'users');
-    // const userDoc = doc(userCollection, auth.currentUser.email)
+        let dRef = doc(cRef, docID);
+        onSnapshot(dRef, (snap) => {
+            updateCard(snap.data());
+        });
+    }
 }
 
 /* 
@@ -140,7 +138,8 @@ function updateCard(data) {
                 scansNeeded: data.currentPromotion.scansNeeded,
             }
             setDoc(dRef, { cards: { [data.cafeEmail]: updatedCard } }, {merge:true}).then(() => {
-                console.log('Updated card');
+                console.log(updatedCard);
+                console.log('<UserCards.js/updateCard> Updated card');
             }).catch(err => {
                 console.log('<UserCards.js> error updating card: ' + err);
             })

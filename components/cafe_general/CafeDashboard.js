@@ -29,7 +29,7 @@ const CafeDashboard = ({navigation}) => {
                 { cafe && <CafeTotalData cafe={cafe} /> }
             </View>
             <View style={styles.buttonContainer}>
-                <Button title='Create promotion' onPress={() => console.log('Create promotion pressed')} />
+                <Button title='Create promotion' onPress={() => navigation.navigate('Create Promotion', { cafeData: cafe })} />
                 <Button title='End promotion' onPress={() => console.log('Promotion ended')} />
             </View>
         </View>

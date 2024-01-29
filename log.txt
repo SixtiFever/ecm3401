@@ -44,7 +44,7 @@ promotion changes to all users currently with loyalty cards.
 always shown in chronological order (most recently used at top).
 
 
-##### 17/01/2024
-- Dyanmically updating user.cards when a promotion is aletered.
+##### 27/01/2024
+- Dynamically updating user.cards when a promotion is altered.
     - For example cafe@email changes current promotion scansNeeded from 8 to 10.
     - Cafe doc listener triggers and updates the cafes card across all users with the new promotion data.
