@@ -8,7 +8,7 @@ import { geocodeAsync } from 'expo-location';
 const CafeSettings = ({navigation}) => {
 
     const [address, setAddress] = useState('');
-    const [cafeDetails, setCafeDetails] = useState([])
+    const [cafeDetails, setCafeDetails] = useState(null)
 
     useEffect(() => {
 
@@ -127,14 +127,14 @@ function getCafeDetails(setCafeDetails) {
 const CafeLocations = (locations) => {
     console.log(locations)
     const addresses = locations.locations;
-    console.log(addresses)
-    // return (
-    //         addresses.map(address => {
-    //             return (
-    //                 <Text>{address}</Text>
-    //             )
-    //         })
-    // )
+    console.log(addresses);
+    return (
+            addresses.map(address => {
+                return (
+                    <Text>{address}</Text>
+                )
+            })
+    )
 }
 
 
