@@ -2,7 +2,8 @@ import { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { firestore, auth } from "../../firebaseConfig";
 import { collection, doc, setDoc, getDoc } from "firebase/firestore";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { EmailAuthCredential, createUserWithEmailAndPassword } from "firebase/auth";
+import { geocodeAsync } from 'expo-location';
 
 const CafeSignup = ({ navigation }) => {
 
@@ -20,11 +21,10 @@ const CafeSignup = ({ navigation }) => {
         } else {
 
             const cafeObject = {
-                'cafeName': cafeName,
+                'cafeName': cafeName.toLowerCase(),
                 'cafeEmail': cafeEmail.toLowerCase(),
                 'cafePassword': cafePassword,
-                'address': address,
-                'postcode': postcode,
+                'address': [address],
                 'qrLink': generateQRLink(cafeEmail.toLowerCase()),
                 'customers': {},
                 'redeems': 0,
@@ -43,6 +43,18 @@ const CafeSignup = ({ navigation }) => {
             }
 
 
+
+            // perform geocoding on address
+            geocodeAsync(cafeObject.address[0]).then(location => {
+                const cRef = collection(firestore, 'locations' );
+                const dRef = doc(cRef, cafeEmail);
+                setDoc(dRef, { 'coordinates' : [{ lat: location[0].latitude, long: location[0].longitude }] }, { merge: true } );
+            }).catch(err => {
+                console.log('<CafeSignup.js/handleSignup> error performing address geolocation: ' + err);
+            })
+
+
+
             registerCafeWithEmailAndPassword(auth, cafeObject);
 
             navigation.navigate('Cafe Login');
@@ -56,8 +68,7 @@ const CafeSignup = ({ navigation }) => {
             <TextInput style={styles.textInput} placeholder="Confirm cafe email" onChangeText={setCafeEmailConfirm}  />
             <TextInput style={styles.textInput} placeholder="Cafe password" onChangeText={setCafePassword} />
             <TextInput style={styles.textInput} placeholder="Confirm Cafe password"  onChangeText={setCafePasswordConfirm} />
-            <TextInput style={styles.textInput} placeholder="Enter cafe address" onChangeText={setAddress} />
-            <TextInput style={styles.textInput} placeholder="Enter cafe postcode" onChangeText={setPostcode} />
+            <TextInput style={styles.textInput} placeholder="Enter full cafe address (can add more later)" onChangeText={setAddress} />
             <Button title="Signup" onPress={handleSignup} />
             <Button title="Login" onPress={() => handleToLogin(navigation)} />
         </View>

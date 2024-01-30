@@ -33,7 +33,7 @@ const CreatePromotion = ({route, navigation}) => {
         'customerRedeems': 0,
         'scansPerDay': 0,
         'redeemsPerDay': 0,
-        'startDate': new Date().toLocaleString(),
+        'startDate': formatDate(new Date().toLocaleString()),
         
     }
 
@@ -76,31 +76,38 @@ const CreatePromotion = ({route, navigation}) => {
 
 
 /*
-@param1 -> outData -> Data of the promotion being finished. Store in cafe.previousPromotions
+@param1 -> outData -> Data of the promotion being finished. Store in cafe.previousPromotions.
+Archives the outgoing promotion before setting cafe.currentPromotion to the new promotion details
 */
 function handleLaunchPromotion(oldData, newPromotion, nav) {
-    /*
-    - Calculate days ran for ending promotion
-    - Save promotion to cafe.previousPromotions
-
-
-    - Populate cafe.currentPromotion with new promotion details
-    */
     
     archivePreviousPromotion(oldData, newPromotion).then( newPromo => {
         createNewPromotion(newPromo);
-        // nav.reset({
-        //     index: 0,
-        //     routes: [{name: 'Your Cafe'}],
-        // })
         nav.navigate('Your Cafe');
+
     }).catch(err => {
         console.log('<CreatePromotion.js/handleLaunchPromotion> error: ' + err);
+        
     });
-    
-    
 }
 
+/*
+converts date string into array and returns the dd/mm/yyyy format
+*/
+function formatDate(date) {
+    const dateArr = date.split(',');  
+    return dateArr[0];
+}
+
+/*
+@param1 -> Old promotion data
+@param2 -> New promotion data
+calculates days run for the old promotion and saves it to cafe.previousPromotions.
+@returns the new promotion in order to pass it to function.then() for sequential execution.
+This is to prevent the new promotion being set to cafe.currentPromotion before archiving the 
+old promotion, which would result in the new promotion being archived and the old promotion 
+being discarded.
+*/
 async function archivePreviousPromotion(oldData, newPromo){
     const {daysRun, endDate} = calculatePromotionTimeInDays(oldData.startDate);
 
@@ -133,7 +140,6 @@ function calculatePromotionTimeInDays(startDate) {
     let from = startDate.split('/');
     const start = new Date(from[2], from[1]-1, from[0]);
     const end = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
-    //const end = Date.parse(endDate);
     const diffInTime = end.getTime() - start.getTime();
     let diffInDays = Math.round(diffInTime / (1000 * 3600 * 24));
     return {daysRun: diffInDays, endDate: end};
