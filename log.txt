@@ -53,3 +53,9 @@ always shown in chronological order (most recently used at top).
 ##### 29/01/2024
 - Successfully archiving and launching a new promotion in sequential order
 - onSnapshot implemented to listed to all cafe documents that correspond to a users cards array
+
+##### 31/01/2024
+- Implement map feature
+    - Get current user location and mark on map
+    - Render all vendor locations upon Map render
+- Re-configure handleFirstScan due to race condition occuring with cafeDocumentListener

@@ -1,4 +1,4 @@
-import { View, Text, Button, StyleSheet, ScrollView } from "react-native"
+import { View, Text, Button, StyleSheet, ScrollView, Pressable } from "react-native"
 import { useState, useEffect } from "react"
 import { collection, doc, getDoc, onSnapshot, setDoc } from "firebase/firestore"
 import { auth, firestore } from "../../firebaseConfig"
@@ -10,6 +10,11 @@ const UserCards = ({navigation}) => {
     const [cards, setCards] = useState(null);
 
     useEffect(() => {
+        console.log('Use effect called')
+
+        navigation.setOptions({
+            headerRight: () => (<MapPressable nav={navigation} />),
+        });
 
         // pull users loyalty cards from firestore
         getLoyaltyCards(setCards);
@@ -109,17 +114,18 @@ function sortCards(cards) {
 listens for updates within the cafe document and updates
 cards for all users with the cafes loyalty card.
 */
-function cafeDocumentListener(cards) {
+async function cafeDocumentListener(cards) {
     const cafeEmails = Object.keys(cards);
     if ( cafeEmails.length < 1 ) return;
     const cRef = collection(firestore, 'cafes');
     for ( let i = 0; i < cafeEmails.length; i++ ) {
+        // itetate cafe documents in the users cafe emails
         let docID = cafeEmails[i];
-
         let dRef = doc(cRef, docID);
         onSnapshot(dRef, (snap) => {
             updateCard(snap.data());
         });
+
     }
 }
 
@@ -127,13 +133,14 @@ function cafeDocumentListener(cards) {
 updates users card with the updated promotion data
 */
 function updateCard(data) {
+    if ( Object.entries(data.customers).length < 1 ) return;
     const cRef = collection(firestore, 'users');
     const dRef = doc(cRef, auth.currentUser.email);
+    console.log('Cafe data: ' + JSON.stringify(data));
     const updatedCard = {
                 cafeEmail: data.cafeEmail,
                 cafeName: data.cafeName,
                 currentScans: data.customers[auth.currentUser.email].current,
-                postCode: data.postcode,
                 reward: data.currentPromotion.reward,
                 scansNeeded: data.currentPromotion.scansNeeded,
             }
@@ -143,6 +150,15 @@ function updateCard(data) {
             }).catch(err => {
                 console.log('<UserCards.js> error updating card: ' + err);
             })
+}
+
+
+const MapPressable = ({nav}) => {
+    return (
+        <Pressable onPress={() => nav.navigate('Map')}>
+            <Text>Maps</Text>
+        </Pressable>
+    )
 }
 
 const styles = StyleSheet.create({

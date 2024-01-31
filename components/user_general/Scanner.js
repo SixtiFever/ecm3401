@@ -21,6 +21,7 @@ const Scanner = ({navigation}) => {
 
         // if user already has a loyalty card with the cafe...
         if ( await hasUserVisitedCafeBefore(data) ) {
+            console.log('Visited cafe before');
              try {
 
                 // update loyalty card in the user document
@@ -87,6 +88,24 @@ async function handleFirstScan(cafeEmail) {
     try {
         await runTransaction(firestore, async ( transaction ) => {
             const cafeSnap = await getDoc(cafeDocRef);
+            const userDoc = await getDoc(userDocRef);
+
+            if ( !userDoc.exists() ) {
+                throw "<Scanner.js/handleFirstScan> User document doesn't exist";
+            } else {
+
+                const cardObject = {
+                    'cafeEmail': cafeSnap.data().cafeEmail,
+                    'cafeName': cafeSnap.data().cafeName,
+                    'reward': cafeSnap.data().currentPromotion.reward,
+                    'scansNeeded': cafeSnap.data().currentPromotion.scansNeeded,
+                    'currentScans': 1,
+                    'mostRecent': new Date().getTime(),
+                }
+
+                await setDoc(userDocRef, {  cards: { [cafeSnap.data().cafeEmail]: cardObject } } , {merge:true});
+            }
+            
             if ( !cafeSnap.exists() ) {
                 throw "<Scanner.js/handleFirstScan> Cafe doc doesn't exist";
             } else {
@@ -101,10 +120,6 @@ async function handleFirstScan(cafeEmail) {
     } catch(err) {
         console.log(err);
     }
-
-    const cafeSnap = await getCafeData(cafeEmail);
-    const card = generateLoyaltyCard(cafeSnap.data());
-    await setDoc(userDocRef, {  cards: card } , {merge:true});
 
 }
 
@@ -193,8 +208,8 @@ Checks whether the user currently has a virtual loyalty card for that cafe
 async function hasUserVisitedCafeBefore(cafeEmail) {
     const cRef = collection(firestore, 'cafes')
     const dRef = doc(cRef, cafeEmail);
-    const snap = await getDoc(dRef);
-    if ( snap.data()['customers'][auth.currentUser.email] != undefined ) {
+    const cafeSnap = await getDoc(dRef);
+    if ( cafeSnap.data()['customers'][auth.currentUser.email] != undefined ) {
         return true;
     } else {
         return false;
@@ -227,8 +242,8 @@ function generateLoyaltyCard(cafeSnap){
         'cafeName': cafeSnap['cafeName'],
         'reward': cafeSnap.currentPromotion.reward,
         'scansNeeded': cafeSnap.currentPromotion.scansNeeded,
-        'postcode': cafeSnap.postcode,
         'currentScans': 1,
+        'mostRecent': new Date().getTime(),
     }
     return { [cafeSnap.cafeEmail]: card };
 }

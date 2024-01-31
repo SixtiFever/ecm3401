@@ -98,7 +98,7 @@ async function updateLocationsCollection(location) {
         const dRef = doc(cRef, auth.currentUser.email);
         const snap = await getDoc(dRef);
         let arr = snap.data().coordinates;
-        let newVal = {'latitude': l[0].latitude, 'longitude': l[0].longitude}
+        let newVal = {'lat': l[0].latitude, 'long': l[0].longitude}
         if ( arr.includes(newVal) ) {
             console.log('Address already exists');
             return;

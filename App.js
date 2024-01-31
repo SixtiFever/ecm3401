@@ -13,6 +13,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import CafeDashboard from './components/cafe_general/CafeDashboard';
 import UserCards from './components/user_general/UserCards';
 import Scanner from './components/user_general/Scanner';
+import Map from './components/user_general/Map';
 
 const Stack = createStackNavigator();
 
@@ -58,6 +59,7 @@ const UserScreenStack = () => {
     return (
         <Stack.Navigator>
             <Stack.Screen name='Your loyalty cards' component={UserCards} />
+            <Stack.Screen name='Map' component={Map} />
             <Stack.Screen name='Scanner' component={Scanner} />
         </Stack.Navigator>
     )
