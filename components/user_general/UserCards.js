@@ -65,7 +65,13 @@ const MapCards = ({data}) => {
     return (
         sortedCards.map( item => {
             return (
-                <Card key={item.cafeEmail} cafeName={item.cafeName} currentScans={item.currentScans} scansNeeded={item.scansNeeded} reward={item.reward} />
+                <Card 
+                    key={item.cafeEmail} 
+                    cafeName={item.cafeName} 
+                    currentScans={item.currentScans} 
+                    scansNeeded={item.scansNeeded} 
+                    reward={item.reward} 
+                    cafeEmail={item.cafeEmail} />
             )
         })
     )
