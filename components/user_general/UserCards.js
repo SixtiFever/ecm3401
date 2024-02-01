@@ -131,6 +131,11 @@ async function cafeDocumentListener(cards) {
         let dRef = doc(cRef, docID);
 
         onSnapshot(dRef, (snap) => {
+
+            // check if cafe.customers is empty
+            // return if is, else, update card
+            if ( Object.keys(snap.data().customers).length < 1 ) return;
+
             updateCard(snap.data());
         });
     }
