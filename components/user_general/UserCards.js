@@ -19,6 +19,7 @@ const UserCards = ({navigation}) => {
         // pull users loyalty cards from firestore
         getLoyaltyCards(setCards);
 
+        // triggers cards update when a qr code is scanned
         userCardListener(setCards);
 
 
@@ -115,37 +116,53 @@ listens for updates within the cafe document and updates
 cards for all users with the cafes loyalty card.
 */
 async function cafeDocumentListener(cards) {
-    const cafeEmails = Object.keys(cards);
-    if ( cafeEmails.length < 1 ) return;
+    const cafeEmails = Object.keys(cards);  // store emails of all users loyalty cards
+
+    if ( cafeEmails.length < 1 ) {
+        console.log('User has no loyalty cards')
+    };
+
     const cRef = collection(firestore, 'cafes');
+
+    // set up listeners for all cafe documents that a user is subscribed to
     for ( let i = 0; i < cafeEmails.length; i++ ) {
-        // itetate cafe documents in the users cafe emails
+
         let docID = cafeEmails[i];
         let dRef = doc(cRef, docID);
+
         onSnapshot(dRef, (snap) => {
             updateCard(snap.data());
         });
-
     }
 }
 
 /* 
-updates users card with the updated promotion data
+pulls updated data from the cafe document.
+Creates a new card object based on the data
+Updates the customers loyalt card with the data
 */
 function updateCard(data) {
-    if ( Object.entries(data.customers).length < 1 ) return;
+    const userEmail = auth.currentUser.email;
+    if ( data.customers[userEmail] == null || data.customers[userEmail] == undefined ) {
+        console.log('Cafe.customers doesn\'t include that user');
+        return;
+    } else {
+        console.log(data.cafeEmail);
+        console.log(data.cafeName);
+        console.log(data.customers[userEmail]);
+    }
+    if ( Object.entries(data.customers).length < 1 ) return;  // if the cafe.customers field is empty
+
     const cRef = collection(firestore, 'users');
     const dRef = doc(cRef, auth.currentUser.email);
-    console.log('Cafe data: ' + JSON.stringify(data));
     const updatedCard = {
                 cafeEmail: data.cafeEmail,
                 cafeName: data.cafeName,
-                currentScans: data.customers[auth.currentUser.email].current,
+                currentScans: data.customers[userEmail].current,
                 reward: data.currentPromotion.reward,
                 scansNeeded: data.currentPromotion.scansNeeded,
             }
             setDoc(dRef, { cards: { [data.cafeEmail]: updatedCard } }, {merge:true}).then(() => {
-                console.log(updatedCard);
                 console.log('<UserCards.js/updateCard> Updated card');
             }).catch(err => {
                 console.log('<UserCards.js> error updating card: ' + err);

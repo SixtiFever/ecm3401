@@ -103,7 +103,7 @@ async function handleFirstScan(cafeEmail) {
                     'mostRecent': new Date().getTime(),
                 }
 
-                await setDoc(userDocRef, {  cards: { [cafeSnap.data().cafeEmail]: cardObject } } , {merge:true});
+                transaction.set(userDocRef, {  cards: { [cafeSnap.data().cafeEmail]: cardObject } } , {merge:true});
             }
             
             if ( !cafeSnap.exists() ) {
