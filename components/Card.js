@@ -34,7 +34,8 @@ async function handleDeleteCard(cafeEmail, auth) {
     try {
         await runTransaction(firestore, async (transaction) => {
 
-            // updating users cards
+
+            // remove card from users cards
             const userCollection = collection(firestore, 'users');
             const userDoc = doc(userCollection, auth.currentUser.email);
             const userDocSnap = await getDoc(userDoc);
@@ -43,6 +44,14 @@ async function handleDeleteCard(cafeEmail, auth) {
             const updatedCards = Object.entries(userDocSnap.data().cards).filter( card => card[0] != cafeEmail );
             const cardObject = Object.fromEntries(updatedCards);
             transaction.update(userDoc, { cards: cardObject });
+
+            // remove from cafe.customers
+            const cafeCollection = collection(firestore, 'cafes');
+            const cafeDoc = doc(cafeCollection, cafeEmail);
+            const cafeDocSnap = await getDoc(cafeDoc);
+            const updatedCustomers = Object.entries(cafeDocSnap.data().customers).filter( customer => customer[0] != auth.currentUser.email )
+            const customerObject = Object.fromEntries(updatedCustomers);
+            transaction.update(cafeDoc, { customers: customerObject });
 
         })
     } catch (err) {
