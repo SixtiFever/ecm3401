@@ -1,6 +1,6 @@
 import { View, Text, Button, StyleSheet, ScrollView, Pressable } from "react-native"
 import { useState, useEffect } from "react"
-import { collection, doc, getDoc, onSnapshot, setDoc } from "firebase/firestore"
+import { collection, doc, getDoc, onSnapshot, runTransaction, setDoc } from "firebase/firestore"
 import { auth, firestore } from "../../firebaseConfig"
 import { CameraView, Camera } from "expo-camera/next";
 import Card from "../Card";
@@ -136,13 +136,24 @@ async function cafeDocumentListener(cards) {
         let docID = cafeEmails[i];
         let dRef = doc(cRef, docID);
 
-        onSnapshot(dRef, (snap) => {
+        onSnapshot(dRef, async (snap) => {
 
             // check if cafe.customers is empty
             // return if is, else, update card
-            if ( Object.keys(snap.data().customers).length < 1 ) return;
+            if ( Object.keys(snap.data().customers).length < 1 ) {
+                runTransaction(firestore, async (transaction) => {
+                    const userCol = collection(firestore, 'users');
+                    const userRef = doc(userCol, auth.currentUser.email);
+                    const userDoc = await getDoc(userRef);
+                    const updatedUserCards = Object.entries(userDoc.data().cards).filter(card => card[0] != docID);
+                    transaction.update(userRef, { cards: updatedUserCards });
+                    
+                })
+                return;
+            };
 
             updateCard(snap.data());
+
         });
     }
 }

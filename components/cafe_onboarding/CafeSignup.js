@@ -47,7 +47,7 @@ const CafeSignup = ({ navigation }) => {
             // perform geocoding on address
             geocodeAsync(cafeObject.address[0]).then(location => {
                 const cRef = collection(firestore, 'locations' );
-                const dRef = doc(cRef, cafeEmail);
+                const dRef = doc(cRef, cafeEmail.toLowerCase());
                 setDoc(dRef, { 'coordinates' : [{ lat: location[0].latitude, long: location[0].longitude }] }, { merge: true } );
             }).catch(err => {
                 console.log('<CafeSignup.js/handleSignup> error performing address geolocation: ' + err);

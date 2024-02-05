@@ -1,7 +1,7 @@
 import { View, Text, Button, TextInput, StyleSheet } from "react-native"
 import { auth, firestore } from "../../firebaseConfig";
 import { deleteUser, signOut } from "firebase/auth";
-import { collection, deleteDoc, setDoc, doc, getDoc, runTransaction, onSnapshot }    from "firebase/firestore";
+import { collection, deleteDoc, setDoc, doc, getDoc, runTransaction, onSnapshot, updateDoc }    from "firebase/firestore";
 import { useState, useEffect } from 'react'
 import { geocodeAsync } from 'expo-location';
 
@@ -36,7 +36,7 @@ const CafeSettings = ({navigation}) => {
             </View>
             <View style={styles.logoutContainer}>
                 <Button title="Logout" onPress={() => handleLogout(navigation, setCafeDetails)} />
-                <Button title="Delete account" onPress={null} />
+                <Button title="Delete account" onPress={() => handleDeleteAccount(navigation)} />
             </View>
         </View>
     )
@@ -55,23 +55,50 @@ function handleAddLocation(address, setCafeDetails) {
     updateLocationsCollection(address)
 }
 
-function handleDeleteAccount(nav) {
-    const cRef = collection(firestore, 'cafes');
-    const dRef = doc(cRef, auth.currentUser.email);
-    deleteUser(auth.currentUser).then(() => {
-        setDoc(dRef, {}).then(() => {
-            deleteDoc(dRef).then(() => {
-                console.log('Successfully deleted document');
-                nav.navigate('Cafe Login');
+async function handleDeleteAccount(nav) {
+
+
+    await runTransaction(firestore, async (transaction) => {
+
+        const cRef = collection(firestore, 'cafes');
+        const dRef = doc(cRef, auth.currentUser.email);
+
+        const locColl = collection(firestore, 'locations');
+        const locDocRef = doc(locColl, auth.currentUser.email);
+
+        const cafeDoc = await getDoc(dRef);
+        removeCardFromUserDocs(cafeDoc.data());  // remove cafes loyaly card from all users that have it
+
+
+        transaction.delete(locDocRef);  // delete cafes locations
+
+        // delete cafe document and authenticated account
+        deleteUser(auth.currentUser).then(() => {  
+            setDoc(dRef, {}).then(() => {
+                deleteDoc(dRef).then(() => {
+                    console.log('Successfully deleted document');
+                    nav.navigate('Cafe Login');
+                }).catch(err => {
+                    console.log('<CafeSettings.js>: ' + err);
+                })
             }).catch(err => {
                 console.log('<CafeSettings.js>: ' + err);
             })
         }).catch(err => {
-            console.log('<CafeSettings.js>: ' + err);
+            console.log('<CafeSettings.js> Error deleting user: ' + err);
         })
+
+        nav.reset({
+            index: 0,
+            routes: [
+                {name: 'Cafe Login'},
+            ]
+        })
+
     }).catch(err => {
-        console.log('<CafeSettings.js> Error deleting user: ' + err);
+        console.log('<CafeSettings.js/handleDeleteAccount> error deleting account: ' + err);
     })
+
 }
 
 
@@ -124,10 +151,24 @@ function getCafeDetails(setCafeDetails) {
 }
 
 
+async function removeCardFromUserDocs(cafeDoc) {
+    const cRef = collection(firestore, 'users');
+    const userEmails = Object.keys(cafeDoc.customers);
+    if (userEmails.length < 1) return;
+    console.log(userEmails);
+    for ( let i = 0; i < userEmails.length; i++ ) {
+        const dRef = doc(cRef, userEmails[i]);
+        const userDoc = await getDoc(dRef);
+        const newCards = Object.entries(userDoc.data().cards).filter( card => card[0] != auth.currentUser.email);
+        await updateDoc(dRef, { cards: newCards });
+    }
+}
+
+
 const CafeLocations = (locations) => {
-    console.log(locations)
+
     const addresses = locations.locations;
-    console.log(addresses);
+
     return (
             addresses.map(address => {
                 return (

@@ -23,6 +23,7 @@ const CafeDashboard = ({route, navigation}) => {
         const cRef = collection(firestore, 'cafes');
         const dRef = doc(cRef, auth.currentUser.email);
         onSnapshot(dRef, (snap) => {
+            if (!snap.exists()) return; // if cafe document has been deleted
             setCafe(snap.data())
         });
         
