@@ -1,5 +1,5 @@
 import { View, Text, Button, StyleSheet, Pressable } from 'react-native'
-import { useEffect, useState, useLayoutEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { auth, firestore } from '../../firebaseConfig'
 import { collection, doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore'
 
@@ -8,46 +8,61 @@ const CafeDashboard = ({route, navigation}) => {
 
     const [cafe, setCafe] = useState(null);
 
-    useEffect(() => {
+    useEffect( () => {
 
+        // create settings button
         navigation.setOptions({
             'headerRight': () => (
                 <Button title='Settings' onPress={() => navigation.navigate('Settings')} />
             )
         })
         
+        // initial fetch and render
         if ( cafe == null ) {
             getAndSetCafeData(setCafe);
         }
 
+        // listen to cafe document for data changes and rerender
         const cRef = collection(firestore, 'cafes');
         const dRef = doc(cRef, auth.currentUser.email);
         onSnapshot(dRef, (snap) => {
-            if (!snap.exists()) return; // if cafe document has been deleted
-            setCafe(snap.data())
+
+            if (snap.exists) {
+                setCafe(snap.data());
+            }
+
         });
-        
 
     },[]);
 
+    if ( cafe !== null || cafe !== undefined ) {
 
-
-
-    return (
-        <View style={styles.container}>
-            <View style={styles.dataContainer}>
-                <View style={styles.currentPromoContainer}>
-                    { cafe && <CurrentPromotionData currentPromotion={cafe.currentPromotion} /> }
+        return (
+            <View style={styles.container}>
+                <View style={styles.dataContainer}>
+                    <View style={styles.currentPromoContainer}>
+                        { cafe && <CurrentPromotionData currentPromotion={cafe.currentPromotion} /> }
+                    </View>
+                    <View style={styles.totalDataContainer}>
+                        { cafe && <CafeTotalData cafe={cafe} /> }
+                    </View>
                 </View>
-                <View style={styles.totalDataContainer}>
-                    { cafe && <CafeTotalData cafe={cafe} /> }
-                </View>
+                <Pressable style={styles.createNewPromo} onPress={() => navigation.navigate('Create Promotion', { cafeData: cafe })}>
+                    <Text style={styles.btnText}>Create new Promotion</Text>
+                </Pressable>
             </View>
-            <Pressable style={styles.createNewPromo} onPress={() => navigation.navigate('Create Promotion', { cafeData: cafe })}>
-                <Text style={styles.btnText}>Create new Promotion</Text>
-            </Pressable>
-        </View>
-    )
+        )
+        
+    } else {
+        return (
+            <View>
+                <Text>No cafe data</Text>
+            </View>
+        )
+    }
+
+
+    
 
 }
 
@@ -59,7 +74,7 @@ function handleToSettings(nav) {
     nav.navigate('Settings');
 }
 
-function getAndSetCafeData(setCafe) {
+function getAndSetCafeData(setCafe, nav) {
     const cRef = collection(firestore, 'cafes');
     const dRef = doc(cRef, auth.currentUser.email.toLowerCase());
     getDoc(dRef).then(snap => {
@@ -71,20 +86,21 @@ function getAndSetCafeData(setCafe) {
 
 
 const CafeTotalData = ({cafe}) => {
+
     return (
         <View>
             <Text style={styles.dataHeading}>Total stats</Text>
             <View style={[styles.dataRow, { height: '60%' }]}>
                 <View style={styles.dataCol}>
-                    <Text>{Object.keys(cafe.customers).length}</Text>
+                    <Text>{Object.keys(cafe.customers).length ? Object.keys(cafe.customers).length : 0 }</Text>
                     <Text>Customers</Text>
                 </View>
                 <View style={styles.dataCol}>
-                    <Text>{cafe.scans}</Text>
+                    <Text>{cafe.scans ? cafe.scans : 0}</Text>
                     <Text>Scans</Text>
                 </View>
                 <View style={styles.dataCol}>
-                    <Text>{cafe.redeems}</Text>
+                    <Text>{cafe.redeems ? cafe.redeems : 0}</Text>
                     <Text>Redeems</Text>
                 </View>
             </View>
@@ -93,6 +109,9 @@ const CafeTotalData = ({cafe}) => {
 }
 
 const CurrentPromotionData = ({currentPromotion}) => {
+
+
+
     const startDate = currentPromotion.startDate.split(',');
     if ( Object.keys(currentPromotion).length > 0 ) {
 
@@ -101,31 +120,31 @@ const CurrentPromotionData = ({currentPromotion}) => {
                 <Text style={styles.dataHeading}>Current Promotion</Text>
                 <View style={styles.dataRow}>
                     <View style={styles.dataCol}>
-                        <Text>{currentPromotion.customerScans}</Text>
+                        <Text>{currentPromotion.customerScans ? currentPromotion.customerScans : 0}</Text>
                         <Text>Scans</Text>
                     </View>
                     <View style={styles.dataCol}>
-                        <Text>{currentPromotion.customerRedeems}</Text>
+                        <Text>{currentPromotion.customerRedeems ? currentPromotion.customerRedeems : 0}</Text>
                         <Text>Redeems</Text>
                     </View>
                 </View>
                 <View style={styles.dataRow}>
                     <View style={styles.dataCol}>
-                        <Text>{currentPromotion.scansPerDay}</Text>
+                        <Text>{currentPromotion.scansPerDay ? currentPromotion.scansPerDay : 0}</Text>
                         <Text>Scans/day</Text>
                     </View>
                     <View style={styles.dataCol}>
-                        <Text>{currentPromotion.redeemsPerDay}</Text>
+                        <Text>{currentPromotion.redeemsPerDay ? currentPromotion.redeemsPerDay : 0}</Text>
                         <Text>Redeems/day</Text>
                     </View>
                 </View>
                 <View style={styles.dataRow}>
                     <View style={styles.dataCol}>
-                        <Text>{startDate[0]}</Text>
+                        <Text>{startDate[0] ? startDate[0] : '0'}</Text>
                         <Text>Start date</Text>
                     </View>
                     <View style={styles.dataCol}>
-                        <Text>{currentPromotion.scansNeeded}</Text>
+                        <Text>{currentPromotion.scansNeeded ? currentPromotion.scansNeeded : 0}</Text>
                         <Text>Scans needed</Text>
                     </View>
                 </View>

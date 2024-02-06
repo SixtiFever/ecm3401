@@ -2,11 +2,14 @@ import { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { auth } from "../../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { deleteDoc } from "firebase/firestore";
 
-const Login = ({navigation}) => {
+const Login = ({route, navigation}) => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [deleted, setDeleted] = useState(route.params && route.params.deleted !== undefined ? route.params.deleted : false);
+    const [cafeEmail, setCafeEmail] = useState(route.params && route.params.cafeEmail !== undefined ? route.params.cafeEmail : null);
 
     const handleLogin = () => {
         signInWithEmailAndPassword(auth, email, password)
@@ -20,6 +23,16 @@ const Login = ({navigation}) => {
             const errorCode = error.code;
             const errorMessage = error.message;
           });
+    }
+
+    if ( deleted == true ) {
+        const cRef = collection(firestore, 'cafes');
+        const dRef = doc(cRef, cafeEmail);
+        deleteDoc(dRef).then(() => {
+            console.log('Cafe document deleted');
+        }).catch(err => {
+            console.log('<CafeDashboard.js/onSnapshop/deleteDoc> error: ' + err);
+        })
     }
 
     return (

@@ -4,6 +4,9 @@ import { firestore, auth } from "../../firebaseConfig";
 import { collection, doc, setDoc, getDoc } from "firebase/firestore";
 import { EmailAuthCredential, createUserWithEmailAndPassword } from "firebase/auth";
 import { geocodeAsync } from 'expo-location';
+import * as Location from 'expo-location';
+
+
 
 const CafeSignup = ({ navigation }) => {
 
@@ -15,7 +18,7 @@ const CafeSignup = ({ navigation }) => {
     const [postcode, setPostcode] = useState("");
     const [address, setAddress] = useState("");
 
-    const handleSignup = () => {
+    const handleSignup = async () => {
         if ( !cafeName || cafeEmail != cafeEmailConfirm || cafePassword != cafePasswordConfirm ) {
             alert('Field error');
         } else {
@@ -42,7 +45,11 @@ const CafeSignup = ({ navigation }) => {
                 },
             }
 
-
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                setErrorMsg('Permission to access location was denied');
+                return;
+            }
 
             // perform geocoding on address
             geocodeAsync(cafeObject.address[0]).then(location => {

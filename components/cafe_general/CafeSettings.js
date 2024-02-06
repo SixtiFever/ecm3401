@@ -56,7 +56,7 @@ function handleAddLocation(address, setCafeDetails) {
 }
 
 async function handleDeleteAccount(nav) {
-
+    const cafeEmail = auth.currentUser.email;
 
     await runTransaction(firestore, async (transaction) => {
 
@@ -67,32 +67,21 @@ async function handleDeleteAccount(nav) {
         const locDocRef = doc(locColl, auth.currentUser.email);
 
         const cafeDoc = await getDoc(dRef);
-        removeCardFromUserDocs(cafeDoc.data());  // remove cafes loyaly card from all users that have it
-
+        await removeCardFromUserDocs(cafeDoc.data());  // remove cafes loyaly card from all users that have it
+        console.log('Removed card from user docs')
 
         transaction.delete(locDocRef);  // delete cafes locations
+        console.log('Removed locations')
 
-        // delete cafe document and authenticated account
-        deleteUser(auth.currentUser).then(() => {  
-            setDoc(dRef, {}).then(() => {
-                deleteDoc(dRef).then(() => {
-                    console.log('Successfully deleted document');
-                    nav.navigate('Cafe Login');
-                }).catch(err => {
-                    console.log('<CafeSettings.js>: ' + err);
-                })
-            }).catch(err => {
-                console.log('<CafeSettings.js>: ' + err);
+        // delete cafe authenticated account
+        await deleteUser(auth.currentUser).then(() => {
+            console.log('Deleted cafe authenticated account');
+            deleteDoc(dRef).then(() => {
+                console.log('Deleted cafe document');
             })
+            nav.navigate('Cafe Login', {deleted: true, cafeEmail: cafeEmail});
         }).catch(err => {
             console.log('<CafeSettings.js> Error deleting user: ' + err);
-        })
-
-        nav.reset({
-            index: 0,
-            routes: [
-                {name: 'Cafe Login'},
-            ]
         })
 
     }).catch(err => {
@@ -160,7 +149,8 @@ async function removeCardFromUserDocs(cafeDoc) {
         const dRef = doc(cRef, userEmails[i]);
         const userDoc = await getDoc(dRef);
         const newCards = Object.entries(userDoc.data().cards).filter( card => card[0] != auth.currentUser.email);
-        await updateDoc(dRef, { cards: newCards });
+        const updatedCardsObj = Object.fromEntries(newCards)
+        await updateDoc(dRef, { cards: updatedCardsObj });
     }
 }
 

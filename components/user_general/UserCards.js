@@ -138,6 +138,7 @@ async function cafeDocumentListener(cards) {
 
         onSnapshot(dRef, async (snap) => {
 
+            if ( !snap.exists() ) return;
             // check if cafe.customers is empty
             // return if is, else, update card
             if ( Object.keys(snap.data().customers).length < 1 ) {
@@ -146,8 +147,11 @@ async function cafeDocumentListener(cards) {
                     const userRef = doc(userCol, auth.currentUser.email);
                     const userDoc = await getDoc(userRef);
                     const updatedUserCards = Object.entries(userDoc.data().cards).filter(card => card[0] != docID);
-                    transaction.update(userRef, { cards: updatedUserCards });
+                    const cardsObj = Object.fromEntries(updatedUserCards);
+                    transaction.update(userRef, { cards: cardsObj });
                     
+                }).catch(err => {
+                    console.log('<UserCards.js/cafeDocumentListener/onSnapshot/runTransaction> error: ' + err);
                 })
                 return;
             };
@@ -168,11 +172,8 @@ function updateCard(data) {
     if ( data.customers[userEmail] == null || data.customers[userEmail] == undefined ) {
         console.log('Cafe.customers doesn\'t include that user');
         return;
-    } else {
-        console.log(data.cafeEmail);
-        console.log(data.cafeName);
-        console.log(data.customers[userEmail]);
     }
+
     if ( Object.entries(data.customers).length < 1 ) return;  // if the cafe.customers field is empty
 
     const cRef = collection(firestore, 'users');
@@ -185,7 +186,7 @@ function updateCard(data) {
                 scansNeeded: data.currentPromotion.scansNeeded,
             }
             setDoc(dRef, { cards: { [data.cafeEmail]: updatedCard } }, {merge:true}).then(() => {
-                console.log('<UserCards.js/updateCard> Updated card');
+
             }).catch(err => {
                 console.log('<UserCards.js> error updating card: ' + err);
             })
