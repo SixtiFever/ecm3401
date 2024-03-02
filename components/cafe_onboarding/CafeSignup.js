@@ -53,18 +53,29 @@ const CafeSignup = ({ navigation }) => {
 
             // perform geocoding on address
             geocodeAsync(cafeObject.address[0]).then(location => {
+                console.log(location)
+                if ( location.length <= 0 ) {
+                    return false;
+                }
+
                 const cRef = collection(firestore, 'locations' );
                 const dRef = doc(cRef, cafeEmail.toLowerCase());
                 setDoc(dRef, { 'coordinates' : [{ lat: location[0].latitude, long: location[0].longitude }] }, { merge: true } );
+                return true
+            }).then(validAddress => {
+
+                if (validAddress) {
+                    registerCafeWithEmailAndPassword(auth, cafeObject);
+                    navigation.navigate('Cafe Login');
+                } else {
+                    alert('Address couldn\'t be located.');
+                    return
+                }
+
             }).catch(err => {
                 console.log('<CafeSignup.js/handleSignup> error performing address geolocation: ' + err);
             })
 
-
-
-            registerCafeWithEmailAndPassword(auth, cafeObject);
-
-            navigation.navigate('Cafe Login');
         }
     }
 

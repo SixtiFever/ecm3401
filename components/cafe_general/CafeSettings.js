@@ -1,4 +1,4 @@
-import { View, Text, Button, TextInput, StyleSheet } from "react-native"
+import { View, Text, Button, TextInput, StyleSheet, Pressable } from "react-native"
 import { auth, firestore } from "../../firebaseConfig";
 import { deleteUser, signOut } from "firebase/auth";
 import { collection, deleteDoc, setDoc, doc, getDoc, runTransaction, onSnapshot, updateDoc }    from "firebase/firestore";
@@ -9,6 +9,7 @@ const CafeSettings = ({navigation}) => {
 
     const [address, setAddress] = useState('');
     const [cafeDetails, setCafeDetails] = useState(null)
+    const [locationsList, setLocationsList] = useState(null)
 
     useEffect(() => {
 
@@ -51,8 +52,15 @@ function handleLogout(nav) {
 }
 
 function handleAddLocation(address, setCafeDetails) {
-    updateCafeDoc(address, setCafeDetails);
-    updateLocationsCollection(address)
+
+    updateLocationsCollection(address).then(validLocation => {
+        if ( validLocation ) {
+            updateCafeDoc(address, setCafeDetails)
+        } else {
+            alert('Can\'t add location. Either invald address or location is a duplicate.')
+        }
+    })
+    
 }
 
 async function handleDeleteAccount(nav) {
@@ -106,25 +114,31 @@ async function updateCafeDoc(location){
 async function updateLocationsCollection(location) {
 
     // perform geocoding on address
+
     const l = await geocodeAsync(location);
-    console.log(l)
-    await runTransaction(firestore, async (transaction) => {
+
+    // if invalid location. i.e can't be geocoded
+    if ( l.length <= 0 ) return false
+
+    const transaction = await runTransaction(firestore, async (transaction) => {
 
         const cRef = collection(firestore, 'locations');
         const dRef = doc(cRef, auth.currentUser.email);
         const snap = await getDoc(dRef);
         let arr = snap.data().coordinates;
         let newVal = {'lat': l[0].latitude, 'long': l[0].longitude}
-        if ( arr.includes(newVal) ) {
+        console.log(arr)
+        if ( arr.some( e => e.lat === newVal.lat && e.long === newVal.long) ) {
             console.log('Address already exists');
-            return;
+            return false
         }
 
         arr.push(newVal);
         transaction.set(dRef, { 'coordinates': arr }, {merge: true});
-        
+        return true
     })
-
+    console.log(transaction)
+    return transaction
 }
 
 
@@ -159,10 +173,51 @@ const CafeLocations = (locations) => {
 
     const addresses = locations.locations;
 
+    const handlePressLocation = async (address) => {
+
+        // update locations array
+        updated_locations = addresses.filter(ele => ele != address)
+
+        // geolocate address to obtain coordinates
+        const l = await geocodeAsync(address);
+        coordinatesToDelete = {
+            lat: l[0].latitude,
+            long: l[0].longitude
+        }
+
+        await runTransaction(firestore, async(transaction) => {
+
+            // locations update prep
+            const locationsCollection = collection(firestore, 'locations')
+            const locationsCafeRef = doc(locationsCollection, auth.currentUser.email)
+            const locationsCafeDoc = await getDoc(locationsCafeRef)
+            const coordinatesArray = locationsCafeDoc.data().coordinates
+            const newArray = coordinatesArray.filter(coords => coords.lat != coordinatesToDelete.lat && coords.long != coordinatesToDelete.long)
+
+            // cafe doc addresses update prep
+            const cafeCollection = collection(firestore, 'cafes')
+            const cafeDocRef = doc(cafeCollection, auth.currentUser.email)
+            
+            // firebase interactions
+            try {
+
+                transaction.update(locationsCafeRef, { 'coordinates': newArray })
+                transaction.update(cafeDocRef, { 'address': updated_locations })
+
+            } catch (e) {
+                console.log('<CafeSettings.js/CafeLocations/HandlePressLocation/runTransaction>: ' + e)
+            }
+        })
+
+
+    }
+
     return (
             addresses.map(address => {
                 return (
-                    <Text>{address}</Text>
+                    <Pressable style={styles.locationElement} onPress={() => handlePressLocation(address)}>
+                        <Text>{address}</Text>
+                    </Pressable>
                 )
             })
     )
@@ -198,6 +253,13 @@ const styles = StyleSheet.create({
     logoutContainer: {
         position: 'absolute',
         bottom: 25,
+    },
+    locationElement: {
+        height: 40,
+        width: '100%',
+        backgroundColor: 'red',
+        display: 'flex',
+        justifyContent: 'center'
     }
 })
 
