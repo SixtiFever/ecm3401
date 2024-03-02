@@ -1,4 +1,4 @@
-import { View, Text, Button, TextInput, StyleSheet, Pressable } from "react-native"
+import { View, Text, Button, TextInput, StyleSheet, Pressable, Alert } from "react-native"
 import { auth, firestore } from "../../firebaseConfig";
 import { deleteUser, signOut } from "firebase/auth";
 import { collection, deleteDoc, setDoc, doc, getDoc, runTransaction, onSnapshot, updateDoc }    from "firebase/firestore";
@@ -173,7 +173,12 @@ const CafeLocations = (locations) => {
 
     const addresses = locations.locations;
 
-    const handlePressLocation = async (address) => {
+    const handleDeleteLocation = async (address) => {
+
+        /*
+        deletes the address from the locations collections as well as the cafes document.
+        Rerender of cafe screen on app is triggered via cafe document snapshot listener
+        */
 
         // update locations array
         updated_locations = addresses.filter(ele => ele != address)
@@ -208,14 +213,36 @@ const CafeLocations = (locations) => {
                 console.log('<CafeSettings.js/CafeLocations/HandlePressLocation/runTransaction>: ' + e)
             }
         })
+    }
 
+    const alertDeleteAddress = (address) => {
+        /*
+        alert prompt box that handles deletion of addresses
+        */
+        try {
 
+            Alert.alert( 'Delete address', 'Do you want to delete address ' + address + '?',  [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel pressed'),
+                    style: 'cancel',
+                },
+                {
+                    text: 'Delete',
+                    onPress: () => handleDeleteLocation(address),
+                    style: 'destructive',
+                }
+            ])
+
+        } catch(e){
+            console.log(e)
+        }
     }
 
     return (
             addresses.map(address => {
                 return (
-                    <Pressable style={styles.locationElement} onPress={() => handlePressLocation(address)}>
+                    <Pressable style={styles.locationElement} onLongPress={() => alertDeleteAddress(address)}>
                         <Text>{address}</Text>
                     </Pressable>
                 )
