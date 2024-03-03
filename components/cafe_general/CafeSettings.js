@@ -174,7 +174,6 @@ const CafeLocations = (locations) => {
     const addresses = locations.locations;
 
     const handleDeleteLocation = async (address) => {
-
         /*
         deletes the address from the locations collections as well as the cafes document.
         Rerender of cafe screen on app is triggered via cafe document snapshot listener
@@ -219,6 +218,7 @@ const CafeLocations = (locations) => {
         /*
         alert prompt box that handles deletion of addresses
         */
+       
         try {
 
             Alert.alert( 'Delete address', 'Do you want to delete address ' + address + '?',  [

@@ -92,7 +92,11 @@ async function getCafeLocations() {
     docs.forEach(doc => {
         cafeLocations = cafeLocations.concat(doc.data().coordinates)
     });
-    return cafeLocations;
+
+    // remove undefined locations
+    const locations = cafeLocations.filter(location => location != undefined)
+    
+    return locations;
 }
 
 
