@@ -6,13 +6,18 @@ import { getDoc, collection, doc, setDoc, updateDoc, runTransaction } from 'fire
 
 const Scanner = ({navigation}) => {
     const [type, setType] = useState(CameraType.back);
-    const [permission, requestPermission] = Camera.useCameraPermissions();
+    const [permission, setPermission] = useState(false)
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
 
     useEffect(() => {
 
-        // pull users loyalty card data
+        const getCameraPermission = async () => {
+            const cameraPermission = await Camera.requestCameraPermissionsAsync()
+            setPermission(true);
+        }
+
+        getCameraPermission()
 
     }, []);
 
@@ -54,7 +59,8 @@ const Scanner = ({navigation}) => {
                     onBarCodeScanned={scanned ? undefined : handleBarCodeScanned} 
                     autoFocus={AutoFocus.on} 
                     style={styles.camera} 
-                    type={CameraType.front}>
+                    type={CameraType.back}
+                    onMountError={err => console.log(err)}>
                 </Camera>
 
             </View>

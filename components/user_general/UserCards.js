@@ -1,8 +1,7 @@
-import { View, Text, Button, StyleSheet, ScrollView, Pressable, Platform } from "react-native"
-import { useState, useEffect, useRef, useDebugValue } from "react"
+import { View, Text, Button, StyleSheet, ScrollView, Pressable } from "react-native"
+import { useState, useEffect, useRef } from "react"
 import { collection, doc, getDoc, onSnapshot, runTransaction, setDoc } from "firebase/firestore"
 import { auth, firestore } from "../../firebaseConfig"
-import { CameraView, Camera } from "expo-camera/next";
 import * as Notifications from 'expo-notifications';
 import NotificationController from "../notifications/NotificationController";
 import Card from "../Card";
@@ -43,8 +42,8 @@ const UserCards = ({navigation}) => {
 
 
         return () => {
-            Notifications.removeNotificationSubscription(notificationListener.current);
-            Notifications.removeNotificationSubscription(responseListener.current);
+            // Notifications.removeNotificationSubscription(notificationListener.current);
+            // Notifications.removeNotificationSubscription(responseListener.current);
         };
 
 
@@ -58,8 +57,6 @@ const UserCards = ({navigation}) => {
         // store in user document
         storePushTokenInUserDocument(expoPushToken)
     }
-
-    console.log(expoPushToken)
 
     return (
         <View style={styles.container}>

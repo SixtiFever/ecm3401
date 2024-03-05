@@ -1,9 +1,10 @@
 import { View, Text, Button, TextInput, StyleSheet, Pressable } from "react-native"
 import { useState } from "react";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { collection, doc, runTransaction, setDoc, getDoc } from "firebase/firestore";
 import { auth, firestore } from "../../firebaseConfig";
 import NumericInput from "react-native-numeric-input";
 import DropDownPicker from "react-native-dropdown-picker";
+import NotificationController from "../notifications/NotificationController";
 
 const CreatePromotion = ({route, navigation}) => {
 
@@ -66,7 +67,7 @@ const CreatePromotion = ({route, navigation}) => {
                 </View>
             </View>
 
-            <Pressable onPress={() => sendPushNotification()}>
+            <Pressable onPress={() => handlePushNotifications()}>
                 <Text>Send push notification</Text>
             </Pressable>
             
@@ -150,8 +151,34 @@ function calculatePromotionTimeInDays(startDate) {
 }
 
 
-async function sendPushNotification() {
+async function getCustomerTokens() {
+    const cRef = collection(firestore, 'cafes');
+    const dRef = doc(cRef, auth.currentUser.email);
+    const cafeDoc = await getDoc(dRef);
+    const customers = cafeDoc.data().customers;  // assigns customers object, containing all customers of cafe
+    let allTokens = [];
+    for ( let customer of Object.values(customers) ) {
+        const tokens = customer.push_tokens;
+        console.log(tokens)
+        for ( let i = 0; i < tokens.length; i++ ) {
+            allTokens.push(tokens[i]);
+        }
+    }
+    return allTokens;
+}
 
+async function handlePushNotifications() {
+    try {
+        const nc = new NotificationController();
+        const tokens = await getCustomerTokens();
+        for (let i = 0; i < tokens.length; i++) {
+            const token = tokens[i].substring(18, tokens[i].length-1)
+            await nc.sendPushNotification(tokens[i]);
+        }
+
+    } catch(err) {
+        console.log(err)
+    }
 }
 
 
