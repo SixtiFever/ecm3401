@@ -1,17 +1,21 @@
-import { View, Text, Button, StyleSheet, ScrollView, Pressable } from "react-native"
-import { useState, useEffect } from "react"
+import { View, Text, Button, StyleSheet, ScrollView, Pressable, Platform } from "react-native"
+import { useState, useEffect, useRef, useDebugValue } from "react"
 import { collection, doc, getDoc, onSnapshot, runTransaction, setDoc } from "firebase/firestore"
 import { auth, firestore } from "../../firebaseConfig"
 import { CameraView, Camera } from "expo-camera/next";
+import * as Notifications from 'expo-notifications';
+import NotificationController from "../notifications/NotificationController";
 import Card from "../Card";
 
 const UserCards = ({navigation}) => {
 
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState(false);
+    const notificationListener = useRef();
+    const responseListener = useRef();
     const [cards, setCards] = useState(null);
 
     useEffect(() => {
-        console.log('Use effect called')
-
         navigation.setOptions({
             headerRight: () => (<MapPressable nav={navigation} />),
         });
@@ -22,12 +26,40 @@ const UserCards = ({navigation}) => {
         // triggers cards update when a qr code is scanned
         userCardListener(setCards);
 
+        const nc = new NotificationController()
+
+        nc.registerForPushNotificationsAsync().then(token => setExpoPushToken(token)).catch(err => {
+            console.log(err)
+        });
+
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+            setNotification(notification);
+        });
+
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log(response);
+        });
+
+
+
+        return () => {
+            Notifications.removeNotificationSubscription(notificationListener.current);
+            Notifications.removeNotificationSubscription(responseListener.current);
+        };
+
 
     }, []);
 
     if ( cards ) {
         cafeDocumentListener(cards);
     }
+
+    if ( expoPushToken ) {
+        // store in user document
+        storePushTokenInUserDocument(expoPushToken)
+    }
+
+    console.log(expoPushToken)
 
     return (
         <View style={styles.container}>
@@ -52,6 +84,20 @@ function getLoyaltyCards(setCards){
     getDoc(dRef).then(snap => {
         const cards = snap.data()['cards'];
         setCards(cards)
+    })
+}
+
+async function storePushTokenInUserDocument(token) {
+    await runTransaction(firestore, async (transaction) => {
+        const cRef = collection(firestore, 'users')
+        const dRef = doc(cRef, auth.currentUser.email)
+        const userDocSnap = await getDoc(dRef)
+        const userTokens = userDocSnap.data().push_tokens
+        if ( !userTokens.includes(token) ) {
+            userTokens.push(token)
+            transaction.update(dRef, { 'push_tokens': userTokens })
+            console.log('Updated push tokens for user')
+        }
     })
 }
 

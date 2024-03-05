@@ -21,6 +21,7 @@ const UserSignup = ({navigation}) => {
                 'email': email.toLowerCase(),
                 'password': password,
                 'cards': {},
+                'push_tokens': [],
             }
 
             registerUserWithEmailAndPassword(auth, user)

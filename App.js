@@ -1,6 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import { useState } from 'react';
+import { Button, StyleSheet, Text, View, Platform } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import NotificationController from './components/notifications/NotificationController';
+import { useState, useEffect, useRef } from 'react';
 import CafeLogin from './components/cafe_onboarding/CafeLogin';
 import CafeSignup from './components/cafe_onboarding/CafeSignup';
 import CreatePromotion from './components/cafe_general/CreatePromotion';
@@ -19,11 +21,11 @@ const Stack = createStackNavigator();
 
 export default function App() {
 
-  return (
-    <NavigationContainer>
-        <ComponentStack />
-    </NavigationContainer>
-  );
+    return (
+        <NavigationContainer>
+            <ComponentStack />
+        </NavigationContainer>
+    );
 }
 
 const ComponentStack = () => {
@@ -73,3 +75,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+

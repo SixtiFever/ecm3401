@@ -49,12 +49,12 @@ const Scanner = ({navigation}) => {
     if (permission) {
         return (
             <View style={styles.container}>
-
+                {console.log('test')}
                 <Camera 
                     onBarCodeScanned={scanned ? undefined : handleBarCodeScanned} 
                     autoFocus={AutoFocus.on} 
                     style={styles.camera} 
-                    type={CameraType.back}>
+                    type={CameraType.front}>
                 </Camera>
 
             </View>
@@ -112,7 +112,7 @@ async function handleFirstScan(cafeEmail) {
                 const newPromotionScans = cafeSnap.data().currentPromotion.customerScans + 1;
                 const newScansTotal = cafeSnap.data().scans + 1;
                 transaction.set(cafeDocRef, { customers: { [auth.currentUser.email] : { 'current': 1, 'redeems': 0, 
-                'loyaltyPoints': 5, 'rank':0, 'totalScans': 1 } }}, {merge: true});
+                'loyaltyPoints': 5, 'rank':0, 'totalScans': 1, 'push_tokens': userDoc.data().push_tokens } }}, {merge: true});
                 transaction.set(cafeDocRef, { currentPromotion: { customerScans: newPromotionScans } }, {merge: true});
                 transaction.set(cafeDocRef, { scans: newScansTotal }, {merge: true} );
             }

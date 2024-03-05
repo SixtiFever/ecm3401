@@ -65,6 +65,10 @@ const CreatePromotion = ({route, navigation}) => {
                         zIndex={4} />
                 </View>
             </View>
+
+            <Pressable onPress={() => sendPushNotification()}>
+                <Text>Send push notification</Text>
+            </Pressable>
             
             <Pressable style={styles.launchPromotion} onPress={() => handleLaunchPromotion(outgoingPromotion, promotion, navigation)}>
                 <Text style={styles.launchBtnText}>Launch Promotion</Text>
@@ -143,6 +147,11 @@ function calculatePromotionTimeInDays(startDate) {
     const diffInTime = end.getTime() - start.getTime();
     let diffInDays = Math.round(diffInTime / (1000 * 3600 * 24));
     return {daysRun: diffInDays, endDate: end};
+}
+
+
+async function sendPushNotification() {
+
 }
 
 
