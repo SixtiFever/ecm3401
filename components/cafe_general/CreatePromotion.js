@@ -7,7 +7,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import NotificationController from "../notifications/NotificationController";
 
 const CreatePromotion = ({route, navigation}) => {
-
+    
     const [outgoingPromotion, setOutgoingPromotion] = useState( route.params.cafeData.currentPromotion );
     const [newPromotion, setNewPromotion] = useState({});
 
@@ -67,7 +67,7 @@ const CreatePromotion = ({route, navigation}) => {
                 </View>
             </View>
 
-            <Pressable onPress={() => handlePushNotifications()}>
+            <Pressable onPress={() => handlePushNotifications(promotion)}>
                 <Text>Send push notification</Text>
             </Pressable>
             
@@ -167,13 +167,13 @@ async function getCustomerTokens() {
     return allTokens;
 }
 
-async function handlePushNotifications() {
+async function handlePushNotifications(promotion = {}) {
     try {
         const nc = new NotificationController();
         const tokens = await getCustomerTokens();
         for (let i = 0; i < tokens.length; i++) {
             const token = tokens[i].substring(18, tokens[i].length-1)
-            await nc.sendPushNotification(tokens[i]);
+            await nc.sendPushNotification(tokens[i], promotion);
         }
 
     } catch(err) {

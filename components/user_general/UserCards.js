@@ -17,6 +17,7 @@ const UserCards = ({navigation}) => {
     useEffect(() => {
         navigation.setOptions({
             headerRight: () => (<MapPressable nav={navigation} />),
+            headerLeft: () => (<SettingsPressable nav={navigation} />)
         });
 
         // pull users loyalty cards from firestore
@@ -135,6 +136,8 @@ function userCardListener(setCards) {
     const cRef = collection(firestore, 'users');
     const dRef = doc(cRef, auth.currentUser.email);
     onSnapshot(dRef, (doc) => {
+        console.log(doc.data())
+        if (!doc.exists()) return;
         setCards(doc.data().cards);
     });
 }
@@ -240,6 +243,15 @@ const MapPressable = ({nav}) => {
     return (
         <Pressable onPress={() => nav.navigate('Map')}>
             <Text>Maps</Text>
+        </Pressable>
+    )
+}
+
+const SettingsPressable = ({nav}) => {
+
+    return (
+        <Pressable onPress={() => nav.navigate('Settings')}>
+            <Text>Settings</Text>
         </Pressable>
     )
 }

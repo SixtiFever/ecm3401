@@ -2,6 +2,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import { auth } from '../../firebaseConfig';
 
 class NotificationController {
 
@@ -17,15 +18,15 @@ class NotificationController {
           
     }
 
-    async sendPushNotification(expoPushToken) {
+    async sendPushNotification(expoPushToken, promotion) {
         const message = {
           to: expoPushToken,
           sound: 'default',
-          title: 'New Promotion Alert!',
-          body: 'Sunset Society have just release a new reward. Take a look in the Loyal Bean app.',
+          title: auth.currentUser.displayName,
+          body: "New reward dropped: " + promotion.reward,
           data: { someData: 'goes here' },
         };
-      
+      console.log(message)
         await fetch('https://exp.host/--/api/v2/push/send', {
           method: 'POST',
           headers: {

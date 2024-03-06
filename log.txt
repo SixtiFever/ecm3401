@@ -59,3 +59,12 @@ always shown in chronological order (most recently used at top).
     - Get current user location and mark on map
     - Render all vendor locations upon Map render
 - Re-configure handleFirstScan due to race condition occuring with cafeDocumentListener
+
+
+##### 05/03/2024
+- Implemented push notifications 
+- Reconfigured UserCards.js so as to check if the users device is a new device -> If so, a expo push token for the device is created.
+
+##### 06/03/2024
+- Sending push notifications with dynamic promotional data when a new promotion is created.
+- 

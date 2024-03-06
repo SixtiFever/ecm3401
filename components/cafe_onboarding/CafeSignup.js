@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { firestore, auth } from "../../firebaseConfig";
 import { collection, doc, setDoc, getDoc } from "firebase/firestore";
-import { EmailAuthCredential, createUserWithEmailAndPassword } from "firebase/auth";
+import { EmailAuthCredential, createUserWithEmailAndPassword, getAuth, updateProfile } from "firebase/auth";
 import { geocodeAsync } from 'expo-location';
 import * as Location from 'expo-location';
 
@@ -142,11 +142,14 @@ function registerCafeWithEmailAndPassword(auth, cafeObject){
     const collectionRef = getCafeCollectionRef();
     setCafeDoc(collectionRef, cafeObject);
     // ...
-    })
-    .catch((error) => {
+    }).then(() => {
+        updateProfile(auth.currentUser, {
+            displayName: cafeObject.cafeName,
+        })
+    }).catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        // ..
+        console.log(error)
     });
 }
 
