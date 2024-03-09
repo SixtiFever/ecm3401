@@ -20,14 +20,18 @@ class NotificationController {
     }
 
     async sendPushNotification(expoPushToken, promotion) {
+
+        // check display name containes a value, else push notification won't send
+        const displayName = auth.currentUser.displayName != undefined ? auth.currentUser.displayName : auth.currentUser.email;
+
         const message = {
           to: expoPushToken,
           sound: 'default',
-          title: auth.currentUser.displayName,
+         title: displayName,
           body: "New reward dropped: " + promotion.reward,
           data: { someData: 'goes here' },
         };
-      console.log(message)
+
         await fetch('https://exp.host/--/api/v2/push/send', {
           method: 'POST',
           headers: {
@@ -37,7 +41,7 @@ class NotificationController {
           },
           body: JSON.stringify(message),
         });
-        console.log('test')
+
       }
       
       async registerForPushNotificationsAsync() {

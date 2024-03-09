@@ -1,5 +1,6 @@
 import { View, Text, Button, TextInput, StyleSheet, Pressable } from "react-native"
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import * as Notifications from 'expo-notifications';
 import { collection, doc, runTransaction, setDoc, getDoc } from "firebase/firestore";
 import { auth, firestore } from "../../firebaseConfig";
 import NumericInput from "react-native-numeric-input";
@@ -66,10 +67,6 @@ const CreatePromotion = ({route, navigation}) => {
                         zIndex={4} />
                 </View>
             </View>
-
-            <Pressable onPress={() => handlePushNotifications(promotion)}>
-                <Text>Send push notification</Text>
-            </Pressable>
             
             <Pressable style={styles.launchPromotion} onPress={() => handleLaunchPromotion(outgoingPromotion, promotion, navigation)}>
                 <Text style={styles.launchBtnText}>Launch Promotion</Text>
@@ -88,6 +85,7 @@ function handleLaunchPromotion(oldData, newPromotion, nav) {
     
     archivePreviousPromotion(oldData, newPromotion).then( newPromo => {
         createNewPromotion(newPromo);
+        handlePushNotifications(newPromotion);
         nav.navigate('Your Cafe');
 
     }).catch(err => {
@@ -173,13 +171,7 @@ async function handlePushNotifications(promotion = {}) {
         const tokens = await getCustomerTokens();
         console.log('Tokens:' + JSON.stringify(tokens));
         for (let i = 0; i < tokens.length; i++) {
-            const token = tokens[i].substring(18, tokens[i].length-1)
-            console.log(token)
-            try {
-                await nc.sendPushNotification(token, promotion);
-            } catch(err) {
-                console.log(err)
-            }
+            await nc.sendPushNotification(tokens[i], promotion);
         }
 
     } catch(err) {
