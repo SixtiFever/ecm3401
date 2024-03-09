@@ -171,9 +171,15 @@ async function handlePushNotifications(promotion = {}) {
     try {
         const nc = new NotificationController();
         const tokens = await getCustomerTokens();
+        console.log('Tokens:' + JSON.stringify(tokens));
         for (let i = 0; i < tokens.length; i++) {
             const token = tokens[i].substring(18, tokens[i].length-1)
-            await nc.sendPushNotification(tokens[i], promotion);
+            console.log(token)
+            try {
+                await nc.sendPushNotification(token, promotion);
+            } catch(err) {
+                console.log(err)
+            }
         }
 
     } catch(err) {

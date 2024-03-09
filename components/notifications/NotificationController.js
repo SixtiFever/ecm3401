@@ -2,7 +2,8 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import { auth } from '../../firebaseConfig';
+import { auth, firestore } from '../../firebaseConfig';
+import { collection, getDoc, runTransaction, doc } from 'firebase/firestore';
 
 class NotificationController {
 
@@ -36,6 +37,7 @@ class NotificationController {
           },
           body: JSON.stringify(message),
         });
+        console.log('test')
       }
       
       async registerForPushNotificationsAsync() {
@@ -64,11 +66,48 @@ class NotificationController {
           token = await Notifications.getExpoPushTokenAsync({
             projectId: Constants.expoConfig.extra.eas.projectId
           });
-          console.log(token);
+          console.log('Register for token async: ' + JSON.stringify(token));
       
         } else {
           alert('Must use physical device for Push Notifications');
         }
+
+        /*
+        
+        Update tokens push tokens in user document, and then all associated cafe documents
+
+        */
+
+        runTransaction(firestore, async(transaction) => {
+            const cRef = collection(firestore, 'users');
+            const dRef = doc(cRef, auth.currentUser.email);
+            const userDoc = await getDoc(dRef);
+
+
+            // if new device -> Add token to user document, update each customer takens
+            // in each cafe document that user has a card for
+            try {
+                let pushTokensArr = userDoc.data()['push_tokens']
+
+                if ( pushTokensArr.includes(token.data) ) return;
+
+                pushTokensArr.push(token.data)
+
+                transaction.update(dRef, { 'push_tokens': pushTokensArr });
+
+                const cafeCollection = collection(firestore, 'cafes');
+                const cafeEmails = Object.keys(userDoc.data().cards);
+                for ( let i = 0; i < cafeEmails.length; i++ ) {
+                    const cafeDocRef = doc(cafeCollection, cafeEmails[i]);
+                    transaction.set(cafeDocRef, { 'customers': { [auth.currentUser.email]: { 'push_tokens': pushTokensArr } } }, {merge: true} );
+                }
+            } catch (err) {
+                console.log('<NotificationController.js/registerForPushNotificationsAsync> : ' + err);
+            }
+
+        }).catch(err => {
+            console.log('<NotificationController.js/registerForPush...> : ' + err);
+        })
       
         return token.data;
       }

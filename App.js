@@ -22,6 +22,35 @@ const Stack = createStackNavigator();
 
 export default function App() {
 
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState(false);
+    const notificationListener = useRef();
+    const responseListener = useRef();
+
+    useEffect(() => {
+        // const nc = new NotificationController()
+
+        // nc.registerForPushNotificationsAsync().then(token => setExpoPushToken(token)).catch(err => {
+        //     console.log(err)
+        // });
+
+        // notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+        //     setNotification(notification);
+        // });
+
+        // responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+        //     console.log(response);
+        // });
+
+
+
+        // return () => {
+        //     // Notifications.removeNotificationSubscription(notificationListener.current);
+        //     // Notifications.removeNotificationSubscription(responseListener.current);
+        // };
+
+    }, [])
+
     return (
         <NavigationContainer>
             <ComponentStack />

@@ -19,7 +19,7 @@ const Scanner = ({navigation}) => {
 
         getCameraPermission()
 
-    }, []);
+    }, []); 
 
     const handleBarCodeScanned = async ({ type, data }) => {
         setScanned(true);
@@ -87,7 +87,6 @@ creates loyalty instances in cafe.customers and user.cafes
 async function handleFirstScan(cafeEmail) {
     const cafeCollectionRef = collection(firestore, 'cafes');
     const cafeDocRef = doc(cafeCollectionRef, cafeEmail);
-
     const userCollectionRef = collection(firestore, 'users');
     const userDocRef = doc(userCollectionRef, auth.currentUser.email);
 
@@ -117,8 +116,10 @@ async function handleFirstScan(cafeEmail) {
             } else {
                 const newPromotionScans = cafeSnap.data().currentPromotion.customerScans + 1;
                 const newScansTotal = cafeSnap.data().scans + 1;
+                const tokens = userDoc.data().push_tokens
+                console.log(tokens);
                 transaction.set(cafeDocRef, { customers: { [auth.currentUser.email] : { 'current': 1, 'redeems': 0, 
-                'loyaltyPoints': 5, 'rank':0, 'totalScans': 1, 'push_tokens': userDoc.data().push_tokens } }}, {merge: true});
+                'loyaltyPoints': 5, 'rank':0, 'totalScans': 1, 'push_tokens': tokens } }}, {merge: true});
                 transaction.set(cafeDocRef, { currentPromotion: { customerScans: newPromotionScans } }, {merge: true});
                 transaction.set(cafeDocRef, { scans: newScansTotal }, {merge: true} );
             }
@@ -153,7 +154,7 @@ async function updateCafeDoc(cafeEmail) {
                 const newCafeTotalScans = cafeDoc.data().scans + 1;
 
                 if ( newCurrent > cafeDoc.data().currentPromotion.scansNeeded ) {
-
+                    // if user scan is a redeem -> Reset loyalty card
                     const newPromotionRedeem = cafeDoc.data().currentPromotion.customerRedeems + 1;
                     const newCustomerRedeems = cafeDoc.data().customers[auth.currentUser.email].redeems + 1;
                     const newTotalRedeems = cafeDoc.data().redeems + 1;
@@ -164,10 +165,11 @@ async function updateCafeDoc(cafeEmail) {
                     transaction.set(dRef, { redeems : newTotalRedeems }, { merge: true });
 
                 } else {
-
+                    // if user scan is not a redeem -> Increment current by 1
                     transaction.set(dRef, { customers : { [email]: { current: newCurrent } } }, { merge: true });
 
                 }
+
 
                 transaction.set(dRef, { customers : { [email]: { totalScans: newCustomerTotalScans } } }, { merge: true });
                 transaction.set(dRef, { customers : { [email]: { loyaltyPoints: newCustomerPoints } } }, { merge: true });
@@ -181,6 +183,11 @@ async function updateCafeDoc(cafeEmail) {
     }
 }
 
+
+/*
+@params1 -> Cafe email (scan data)
+Updates loyalty card within the user document
+*/
 async function updateLoyaltyCard(cafeEmail) {
 
     const cRef = collection(firestore, 'users');

@@ -44,7 +44,7 @@ const UserCards = ({navigation}) => {
 
         return () => {
             // Notifications.removeNotificationSubscription(notificationListener.current);
-            // Notifications.removeNotificationSubscription(responseListener.current);
+            //  Notifications.removeNotificationSubscription(responseListener.current);
         };
 
 
@@ -85,6 +85,11 @@ function getLoyaltyCards(setCards){
     })
 }
 
+/*
+connects to the users document, and updated the users expo tokens for
+push notifications. Only called if the users device is not registered
+in current known push tokens.
+*/
 async function storePushTokenInUserDocument(token) {
     await runTransaction(firestore, async (transaction) => {
         const cRef = collection(firestore, 'users')
@@ -96,6 +101,8 @@ async function storePushTokenInUserDocument(token) {
             transaction.update(dRef, { 'push_tokens': userTokens })
             console.log('Updated push tokens for user')
         }
+    }).catch(err => {
+        console.log('<UserCards.js/storePushTokenInUserDocument> : ' + err);
     })
 }
 
@@ -136,7 +143,7 @@ function userCardListener(setCards) {
     const cRef = collection(firestore, 'users');
     const dRef = doc(cRef, auth.currentUser.email);
     onSnapshot(dRef, (doc) => {
-        console.log(doc.data())
+
         if (!doc.exists()) return;
         setCards(doc.data().cards);
     });
