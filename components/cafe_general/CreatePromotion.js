@@ -72,7 +72,7 @@ const CreatePromotion = ({route, navigation}) => {
                 <Text style={styles.launchBtnText}>Launch Promotion</Text>
             </Pressable>
 
-        </View>
+        </View>     
     )
 }
 

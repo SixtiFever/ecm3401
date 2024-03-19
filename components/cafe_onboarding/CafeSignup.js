@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
 import { firestore, auth } from "../../firebaseConfig";
 import { collection, doc, setDoc, getDoc } from "firebase/firestore";
 import { EmailAuthCredential, createUserWithEmailAndPassword, getAuth, updateProfile } from "firebase/auth";
@@ -87,8 +87,12 @@ const CafeSignup = ({ navigation }) => {
             <TextInput style={styles.textInput} placeholder="Cafe password" onChangeText={setCafePassword} />
             <TextInput style={styles.textInput} placeholder="Confirm Cafe password"  onChangeText={setCafePasswordConfirm} />
             <TextInput style={styles.textInput} placeholder="Enter full cafe address (can add more later)" onChangeText={setAddress} />
-            <Button title="Signup" onPress={handleSignup} />
-            <Button title="Login" onPress={() => handleToLogin(navigation)} />
+            <Pressable style={styles.pressableButton} onPress={handleSignup}>
+                <Text style={styles.pressableText}>Signup</Text>
+            </Pressable>
+            <Pressable style={styles.toLoginContainer} onPress={() => handleToLogin(navigation)}>
+                <Text style={{ color: 'blue', fontSize: 18}}>Login</Text>
+            </Pressable>
         </View>
     )
 }
@@ -171,12 +175,31 @@ const styles = StyleSheet.create({
     },
     textInput : {
         width: '80%',
-        height: 50,
+        height: 60,
+        borderRadius: 6,
+        color: '#1B0229',
+        paddingStart: 15,
+        backgroundColor: '#E3E3E3',
         borderWidth: .5,
-        borderColor: 'black',
-        borderRadius: 4,
-        paddingStart: 10,
         marginTop: 12,
+    },
+    pressableButton: {
+        width: '80%',
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 6,
+        backgroundColor: '#F70084',
+        marginTop: 20,
+    },
+    pressableText: {
+        color: 'white',
+    },
+    toLoginContainer: {
+        height: 50,
+        marginTop: 10,
+        display: 'flex',
+        justifyContent: 'center',
     }
 })
 

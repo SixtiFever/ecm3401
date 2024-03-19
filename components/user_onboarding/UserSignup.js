@@ -1,4 +1,4 @@
-import { View, Text, Button, TextInput, StyleSheet } from "react-native"
+import { View, Text, Button, TextInput, StyleSheet, Pressable } from "react-native"
 import { useState } from "react";
 import { auth, firestore } from "../../firebaseConfig";
 import { collection, doc, setDoc } from "firebase/firestore";
@@ -36,7 +36,9 @@ const UserSignup = ({navigation}) => {
             <TextInput style={styles.textInput} placeholder="Confirm email" onChangeText={setConfirmEmail} />
             <TextInput style={styles.textInput} placeholder="Password" onChangeText={setPassword} />
             <TextInput style={styles.textInput} placeholder="Confirm password" onChangeText={setConfirmPassword} />
-            <Button title="Signup" onPress={() => handleSignup(navigation)} />
+            <Pressable style={styles.pressableButton} onPress={() => handleSignup(navigation)}>
+                <Text style={styles.pressableText}>Signup</Text>
+            </Pressable>
 
         </View>
     )
@@ -84,13 +86,26 @@ const styles = StyleSheet.create({
     },
     textInput : {
         width: '80%',
-        height: 50,
+        height: 60,
+        borderRadius: 6,
+        color: '#1B0229',
+        paddingStart: 15,
+        backgroundColor: '#E3E3E3',
         borderWidth: .5,
-        borderColor: 'black',
-        borderRadius: 4,
-        paddingStart: 10,
         marginTop: 12,
-    }
+    },
+    pressableButton: {
+        width: '80%',
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 6,
+        backgroundColor: '#F70084',
+        marginTop: 20,
+    },
+    pressableText: {
+        color: 'white',
+    },
 })
 
 export default UserSignup;

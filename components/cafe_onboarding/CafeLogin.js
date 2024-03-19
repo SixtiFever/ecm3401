@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
 import { auth } from "../../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { deleteDoc } from "firebase/firestore";
@@ -39,9 +39,12 @@ const Login = ({route, navigation}) => {
         <View style={styles.container}>
             <TextInput style={styles.textInput} placeholder="Email" onChangeText={setEmail} />
             <TextInput style={styles.textInput} placeholder="Password" onChangeText={setPassword} />
-            <Button title="Login" onPress={handleLogin} />
-            <Button title="Forgot password" />
-            <Button title="Signup" onPress={() => handleToSignup(navigation)} />
+            <Pressable style={styles.pressableButton} onPress={handleLogin} >
+                <Text style={styles.pressableText}>Login</Text>
+            </Pressable>
+            <Pressable style={styles.hyperlinkContainer} onPress={() => handleToLogin(navigation)}>
+                <Text style={{ color: 'blue', fontSize: 18}}>Signup</Text>
+            </Pressable>
         </View>
     )
 }
@@ -61,12 +64,31 @@ const styles = StyleSheet.create({
     },
     textInput : {
         width: '80%',
-        height: 50,
+        height: 60,
+        borderRadius: 6,
+        color: '#1B0229',
+        paddingStart: 15,
+        backgroundColor: '#E3E3E3',
         borderWidth: .5,
-        borderColor: 'black',
-        borderRadius: 4,
-        paddingStart: 10,
         marginTop: 12,
+    },
+    pressableButton: {
+        width: '80%',
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 6,
+        backgroundColor: '#F70084',
+        marginTop: 20,
+    },
+    pressableText: {
+        color: 'white',
+    },
+    hyperlinkContainer: {
+        height: 50,
+        marginTop: 10,
+        display: 'flex',
+        justifyContent: 'center',
     }
 })
 
