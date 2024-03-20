@@ -1,10 +1,20 @@
 import { collection, doc, getDoc, runTransaction, deleteField, where } from 'firebase/firestore';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Alert } from 'react-native';
 import { auth, firestore } from '../firebaseConfig';
+import { useEffect, useState } from 'react';
 
 
-const Card = ({cafeEmail, cafeName, currentScans, scansNeeded, reward}) => {
+const Card = ({cafeEmail, cafeName, currentScans, scansNeeded, reward, beanIcon}) => {
+
+    const [beanIconArray, setBeanIconArray] = useState([])
+
+    useEffect(()=> {
+
+        genBeanIconArray(currentScans, scansNeeded, beanIcon, setBeanIconArray)
+        console.log('test')
+    }, [currentScans])
+
 
     const handleLongPress = () => {
         Alert.alert('Delete card', 'Do you want to delete your loyalty card for ' + cafeName + '? This can\'t be undone.', [
@@ -20,12 +30,36 @@ const Card = ({cafeEmail, cafeName, currentScans, scansNeeded, reward}) => {
             }
         ]);
     }
+
     return (
         <Pressable style={styles.cardBackground} onLongPress={() => handleLongPress()}>
-            <Text>Cafe: {cafeName}</Text>
+            <View style={styles.cardLHSContainer}>
+                
+            </View>
+            <View style={styles.cardRHSContainer}>
+                <View style={styles.cardTitleContainer}>
+                    <Text>{cafeName}</Text>
+                </View>
+                <View style={styles.cardBeansContainer}>
+                    {beanIconArray.map(bean => {
+                        return (
+                            bean
+                        )
+                    })}
+                </View>
+            </View>
+            {/* <Text>Cafe: {cafeName}</Text>
             <Text>Current Scans: {currentScans}</Text>
             <Text>Scans Needed: {scansNeeded}</Text>
-            <Text>Reward: {reward}</Text>
+            <Text>Reward: {reward}</Text> */}
+            <View style={styles.cardRewardContainer}>
+                <View style={styles.cardRewardIcon}>
+
+                </View>
+                <View style={styles.cardRewardText}>
+                    <Text>{reward}</Text>
+                </View>
+            </View>
         </Pressable>
     )
 }
@@ -59,17 +93,80 @@ async function handleDeleteCard(cafeEmail, auth) {
     }
 }
 
+
+function genBeanIconArray(currentScans, scansNeeded, beanIcon, setBeanIconArray) {
+
+    beanArr = []
+    for( let i = 0; i < scansNeeded; i++) {
+        if ( i < currentScans ) {
+            beanArr.push(<Image source={beanIcon} style={{height: 20, width: 20, marginStart: 6, tintColor: '#3C0919'}}/>)
+        } else {
+            beanArr.push(<Image source={beanIcon} style={{height: 20, width: 20, marginStart: 6, tintColor: '#E4DFDA'}}/>)
+        }
+    }
+    setBeanIconArray(beanArr)
+
+}
+
 const styles = StyleSheet.create({
     cardBackground: {
         backgroundColor: 'white',
         borderRadius: 8,
         padding: 4,
-        height: 150,
+        height: 180,
         display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-evenly',
+        flexDirection: 'row',
         marginTop: 25,
-        width: '100%'
+        width: '100%',
+        justifyContent: 'center'
+      },
+      cardLHSContainer: {
+        height: '75%',
+        width: '35%',
+        backgroundColor: 'red',
+      },
+      cardRHSContainer: {
+        height: '75%',
+        width: '65%',
+        display: 'flex',
+        flexDirection: 'column'
+      },
+      cardTitleContainer: {
+        height: '30%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        paddingStart: 5,
+      },
+      cardBeansContainer: {
+        height: '70%',
+        display: 'flex',
+        flexDirection: 'row',
+        paddingTop: 15,
+        paddingBottom: 15,
+      },
+      cardRewardContainer: {
+        height: '25%',
+        width: '100%',
+        backgroundColor: 'yellow',
+        position: 'absolute',
+        bottom: 0,
+        marginBottom: 2,
+        display: 'flex',
+        flexDirection: 'row'
+      },
+      cardRewardIcon: {
+        width: '15%',
+        height: '100%',
+        backgroundColor: 'green'
+      },
+      cardRewardText: {
+        width: '85%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        paddingStart: 5,
       }
     })
 

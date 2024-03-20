@@ -6,6 +6,8 @@ import * as Notifications from 'expo-notifications';
 import NotificationController from "../notifications/NotificationController";
 import Card from "../Card";
 
+const beansIconSrc = require('../../assets/bean_icon.png');
+
 const UserCards = ({navigation}) => {
 
     const [expoPushToken, setExpoPushToken] = useState('');
@@ -64,7 +66,7 @@ const UserCards = ({navigation}) => {
 
             <View style={styles.cardsContainer}>
                 <ScrollView contentContainerStyle={styles.scrollViewContainer} style={{ flex: 1 }}>
-                    { cards && <MapCards data={cards} /> }
+                    { cards && <MapCards data={cards} beansIcon={beansIconSrc} /> }
                 </ScrollView>
             </View>
 
@@ -109,7 +111,7 @@ async function storePushTokenInUserDocument(token) {
 /*
 component for rendering cards onto screen
 */
-const MapCards = ({data}) => {
+const MapCards = ({data, beansIcon}) => {
 
     const sortedCards = sortCards(data);
     
@@ -122,7 +124,8 @@ const MapCards = ({data}) => {
                     currentScans={item.currentScans} 
                     scansNeeded={item.scansNeeded} 
                     reward={item.reward} 
-                    cafeEmail={item.cafeEmail} />
+                    cafeEmail={item.cafeEmail}
+                    beanIcon={beansIcon} />
             )
         })
     )
