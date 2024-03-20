@@ -4,6 +4,8 @@ import { Alert } from 'react-native';
 import { auth, firestore } from '../firebaseConfig';
 import { useEffect, useState } from 'react';
 
+const rewardIconSrc = require('../assets/gift.png');
+
 
 const Card = ({cafeEmail, cafeName, currentScans, scansNeeded, reward, beanIcon}) => {
 
@@ -38,7 +40,7 @@ const Card = ({cafeEmail, cafeName, currentScans, scansNeeded, reward, beanIcon}
             </View>
             <View style={styles.cardRHSContainer}>
                 <View style={styles.cardTitleContainer}>
-                    <Text>{cafeName}</Text>
+                    <Text style={styles.titleText}>{cafeName}</Text>
                 </View>
                 <View style={styles.cardBeansContainer}>
                     {beanIconArray.map(bean => {
@@ -48,16 +50,12 @@ const Card = ({cafeEmail, cafeName, currentScans, scansNeeded, reward, beanIcon}
                     })}
                 </View>
             </View>
-            {/* <Text>Cafe: {cafeName}</Text>
-            <Text>Current Scans: {currentScans}</Text>
-            <Text>Scans Needed: {scansNeeded}</Text>
-            <Text>Reward: {reward}</Text> */}
             <View style={styles.cardRewardContainer}>
                 <View style={styles.cardRewardIcon}>
-
+                    <Image source={rewardIconSrc} style={{height: 25, width: 25}} />
                 </View>
                 <View style={styles.cardRewardText}>
-                    <Text>{reward}</Text>
+                    <Text style={styles.rewardText}>{reward}</Text>
                 </View>
             </View>
         </Pressable>
@@ -148,17 +146,21 @@ const styles = StyleSheet.create({
       cardRewardContainer: {
         height: '25%',
         width: '100%',
-        backgroundColor: 'yellow',
         position: 'absolute',
         bottom: 0,
         marginBottom: 2,
         display: 'flex',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
       },
       cardRewardIcon: {
         width: '15%',
         height: '100%',
-        backgroundColor: 'green'
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
       },
       cardRewardText: {
         width: '85%',
@@ -167,6 +169,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'flex-start',
         paddingStart: 5,
+      },
+      rewardText: {
+        fontSize: 14,
+        fontWeight: '500'
+      },
+      titleText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        textDecorationLine: 'underline'
       }
     })
 
