@@ -121,7 +121,6 @@ const styles = StyleSheet.create({
       cardLHSContainer: {
         height: '75%',
         width: '35%',
-        backgroundColor: 'red',
       },
       cardRHSContainer: {
         height: '75%',

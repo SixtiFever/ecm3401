@@ -71,7 +71,9 @@ const UserCards = ({navigation}) => {
             </View>
 
             <View style={styles.scanBtnContainer}>
-                <Button title="Scan" onPress={() => handleToScanner(navigation)} />
+                <Pressable style={styles.scanButton} onPress={() => handleToScanner(navigation)}>
+                    <Text style={styles.scanBtnText}>Scan</Text>
+                </Pressable>
             </View>
 
         </View>
@@ -286,9 +288,25 @@ const styles = StyleSheet.create({
         height: '15%',
         display: 'flex',
         justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
     },
     scrollViewContainer: {
         alignItems: 'center',
+    },
+    scanButton: {
+        height: 80,
+        width: '80%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 6,
+        backgroundColor: '#F70084',
+    },
+    scanBtnText: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: 'white',
     }
 
 })
