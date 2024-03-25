@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native"
+import { View, StyleSheet, Alert } from "react-native"
 import MapView, { Marker } from 'react-native-maps';
 import { collection, doc, getDoc, getDocs, QuerySnapshot } from 'firebase/firestore';
 import { firestore, auth } from '../../firebaseConfig'
@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 const Map = ({navigation}) => {
 
     const [location, setLocation] = useState(null);
+    const [cafeData, setCafeData] = useState([])
     const [cafeLocations, setCafeLocations] = useState([]);
     const [permission, setPermission] = useState(false);
 
@@ -60,6 +61,7 @@ const Map = ({navigation}) => {
                                     latitude: ele.lat,
                                     longitude: ele.long
                                 }}
+                                onPress={() => handleMarkerTap(ele)}
                             />
                         )
                     }) }
@@ -68,6 +70,46 @@ const Map = ({navigation}) => {
 
         </View>
     )
+}
+
+
+async function getEmailFromMarkerTap(ele) {
+    try {
+        const cRef = collection(firestore, 'locations');
+        const snap = await getDocs(cRef)
+        const emails = snap.docs.map(doc => {
+            //const data = doc.data().coordinates;
+            const data = doc.data().coordinates;
+            if (data != undefined) {
+                for ( let i = 0; i < data.length; i++ ) {
+                    if (ele.lat == data[i].lat && ele.long == data[i].long) {
+                        return doc.id
+                    }
+                }
+            }
+        });
+        const email = emails.filter(email => email !== undefined);
+        return email;
+    } catch(err) {
+        console.log(err);
+    }
+}
+
+
+async function handleMarkerTap(locObj){
+
+    const email = await getEmailFromMarkerTap(locObj);
+    const cRef = collection(firestore, 'cafes');
+    const dRef = doc(cRef, email[0]);
+    const snap = await getDoc(dRef);
+    console.log(snap);
+    Alert.alert('Cafe: ' + snap.data().cafeName, 'Reward: ' + snap.data().currentPromotion.reward, [
+        {
+            text: 'Ok',
+            onPress: () => console.log('Cancel pressed'),
+            style: 'cancel',
+        }
+    ])
 }
 
 /*
