@@ -264,29 +264,36 @@ const styles = StyleSheet.create({
     addLocationContainer: {
         width: '80%',
         display: 'flex',
+        marginTop: 25,
     },
     headingText: {
         fontSize: 16,
         fontWeight: 'bold',
     },
     textInput : {
-        width: '80%',
+        width: '100%',
         height: 50,
-        borderWidth: .5,
+        borderWidth: 1,
         borderColor: 'black',
-        borderRadius: 4,
+        borderRadius: 5,
         paddingStart: 10,
+        backgroundColor: 'white',
     },
     logoutContainer: {
         position: 'absolute',
         bottom: 25,
     },
     locationElement: {
-        height: 40,
+        height: 50,
         width: '100%',
-        backgroundColor: 'red',
         display: 'flex',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        borderWidth: '1px',
+        borderColor: 'black',
+        marginTop: 4,
+        paddingStart: 10,
+        borderRadius: 5,
+        backgroundColor: 'white'
     }
 })
 

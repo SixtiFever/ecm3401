@@ -42,8 +42,8 @@ const CreatePromotion = ({route, navigation}) => {
     return (
         <View style={styles.container}>
             <View style={styles.promotionInputs}>
-                <TextInput placeholder="Enter promotion title" onChangeText={setTitle} />
-                <TextInput placeholder="Enter reward" onChangeText={setReward} />
+                <TextInput style={styles.textInput} placeholder="Enter promotion title" onChangeText={setTitle} />
+                <TextInput style={styles.textInput} placeholder="Enter reward" onChangeText={setReward} />
 
                 <View style={styles.numericInputContainer}>
                     
@@ -216,6 +216,15 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    textInput: {
+        width: '100%',
+        height: 60,
+        borderWidth: '1px',
+        borderColor: 'black',
+        borderRadius: 5,
+        paddingStart: 8,
+        backgroundColor: 'white'
     }
 })
 

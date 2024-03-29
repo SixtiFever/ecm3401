@@ -3,6 +3,7 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 import { AutoFocus, Camera, CameraType, CameraView } from 'expo-camera';
 import { firestore, auth } from '../../firebaseConfig';
 import { getDoc, collection, doc, setDoc, updateDoc, runTransaction } from 'firebase/firestore';
+import { Audio } from 'expo-av';
 
 const Scanner = ({navigation}) => {
     const [type, setType] = useState(CameraType.back);
@@ -23,7 +24,7 @@ const Scanner = ({navigation}) => {
 
     const handleBarCodeScanned = async ({ type, data }) => {
         setScanned(true);
-
+        const sound = new Audio.Sound()
         // if user already has a loyalty card with the cafe...
         if ( await hasUserVisitedCafeBefore(data) ) {
             console.log('Visited cafe before');
@@ -47,7 +48,7 @@ const Scanner = ({navigation}) => {
                 console.log('Error with handleFirstScan: ' + err);
             }
         }
-
+        playSound(sound, require('../../assets/scanSound.mp3'));
         alert(`Scanned`);
     };
 
@@ -260,6 +261,22 @@ function generateLoyaltyCard(cafeSnap){
         'mostRecent': new Date().getTime(),
     }
     return { [cafeSnap.cafeEmail]: card };
+}
+
+async function playSound(sound, path) {
+    
+    await Audio.setAudioModeAsync( { playsInSilentModeIOS: true } );
+    try {
+        await sound.loadAsync(path, {
+            volume: 0.50,
+            shouldPlay: true,
+            isMuted: false,
+        });
+        await sound.setPositionAsync(0);
+        await sound.playAsync();
+    } catch (error) {
+        console.log('Error playing success sound: ' + error);
+    }
 }
 
 

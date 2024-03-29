@@ -5,6 +5,7 @@ import { auth, firestore } from "../../firebaseConfig"
 import * as Notifications from 'expo-notifications';
 import NotificationController from "../notifications/NotificationController";
 import Card from "../Card";
+import { Ionicons } from "@expo/vector-icons";
 
 const beansIconSrc = require('../../assets/bean_icon.png');
 
@@ -253,8 +254,8 @@ function updateCard(data) {
 
 const MapPressable = ({nav}) => {
     return (
-        <Pressable onPress={() => nav.navigate('Map')}>
-            <Text>Maps</Text>
+        <Pressable style={{ marginEnd: 20 }} onPress={() => nav.navigate('Map')}>
+            <Ionicons name="location-outline" size={28} color="black" />
         </Pressable>
     )
 }
@@ -262,8 +263,8 @@ const MapPressable = ({nav}) => {
 const SettingsPressable = ({nav}) => {
 
     return (
-        <Pressable onPress={() => nav.navigate('Settings')}>
-            <Text>Settings</Text>
+        <Pressable style={{ marginStart: 20 }} onPress={() => nav.navigate('Settings')}>
+            <Ionicons name="settings-outline" size={28} color="black" />
         </Pressable>
     )
 }
@@ -307,6 +308,12 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 'bold',
         color: 'white',
+    },
+    navbarIconSettings: {
+
+    },
+    navbarIconMap: {
+
     }
 
 })

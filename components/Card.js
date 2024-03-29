@@ -13,8 +13,8 @@ const Card = ({cafeEmail, cafeName, currentScans, scansNeeded, reward, beanIcon}
 
     useEffect(()=> {
 
-        genBeanIconArray(currentScans, scansNeeded, beanIcon, setBeanIconArray)
-        console.log('test')
+        genBeanIconArray(currentScans, scansNeeded, beanIcon, setBeanIconArray);
+
     }, [currentScans])
 
 
@@ -35,9 +35,9 @@ const Card = ({cafeEmail, cafeName, currentScans, scansNeeded, reward, beanIcon}
 
     return (
         <Pressable style={styles.cardBackground} onLongPress={() => handleLongPress()}>
-            <View style={styles.cardLHSContainer}>
+            {/* <View style={styles.cardLHSContainer}>
                 
-            </View>
+            </View> */}
             <View style={styles.cardRHSContainer}>
                 <View style={styles.cardTitleContainer}>
                     <Text style={styles.titleText}>{cafeName}</Text>
@@ -126,7 +126,8 @@ const styles = StyleSheet.create({
         height: '75%',
         width: '65%',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        paddingTop: 10,
       },
       cardTitleContainer: {
         height: '30%',
