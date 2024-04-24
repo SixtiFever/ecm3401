@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 6,
-        backgroundColor: '#F70084',
+        backgroundColor: 'blue',
         marginTop: 20,
     },
     pressableText: {

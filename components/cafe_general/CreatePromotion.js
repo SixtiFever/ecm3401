@@ -68,8 +68,11 @@ const CreatePromotion = ({route, navigation}) => {
                 </View>
             </View>
             
-            <Pressable style={styles.launchPromotion} onPress={() => handleLaunchPromotion(outgoingPromotion, promotion, navigation)}>
+            {/* <Pressable style={styles.launchPromotion} onPress={() => handleLaunchPromotion(outgoingPromotion, promotion, navigation)}>
                 <Text style={styles.launchBtnText}>Launch Promotion</Text>
+            </Pressable> */}
+            <Pressable style={styles.pressableButton} onPress={() => handleLaunchPromotion(outgoingPromotion, promotion, navigation)} >
+                <Text style={styles.pressableText}>Launch promotion</Text>
             </Pressable>
 
         </View>     
@@ -220,12 +223,24 @@ const styles = StyleSheet.create({
     textInput: {
         width: '100%',
         height: 60,
-        borderWidth: '1px',
+        borderWidth: 1,
         borderColor: 'black',
         borderRadius: 5,
         paddingStart: 8,
         backgroundColor: 'white'
-    }
+    },
+    pressableButton: {
+        width: '80%',
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 6,
+        backgroundColor: 'blue',
+        marginTop: 20,
+    },
+    pressableText: {
+        color: 'white',
+    },
 })
 
 export default CreatePromotion;

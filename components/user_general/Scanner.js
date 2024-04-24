@@ -49,7 +49,7 @@ const Scanner = ({navigation}) => {
             }
         }
         playSound(sound, require('../../assets/scanSound.mp3'));
-        alert(`Scanned`);
+        alert(`Success!`);
     };
 
     if (permission) {

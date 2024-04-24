@@ -27,7 +27,7 @@ const UserLogin = ({navigation}) => {
     return (
         <View style={styles.container}>
             <TextInput style={styles.textInput} placeholder="Email" onChangeText={setEmail} />
-            <TextInput style={styles.textInput} placeholder="Password" onChangeText={setPassword} />
+            <TextInput style={styles.textInput} secureTextEntry={true} placeholder="Password" onChangeText={setPassword} />
             <Pressable style={styles.pressableButton} onPress={() => handleLogin(navigation)}>
                 <Text style={styles.pressableText}>Login</Text>
             </Pressable>

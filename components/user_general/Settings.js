@@ -65,12 +65,14 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     pressableContainer: {
-        width: '60%',
-        height: '5%',
+        width: '70%',
+        height: '8%',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'red',
         margin: 5,
+        borderWidth: 1,
+        borderColor: 'black',
+        borderRadius: 8,
     }
 })
 

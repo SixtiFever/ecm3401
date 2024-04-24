@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Pressable, Image } from 'react-native';
 import { auth } from "../../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { deleteDoc } from "firebase/firestore";
+
+const shopImage = require('../../assets/coffee-shop.png');
 
 const Login = ({route, navigation}) => {
 
@@ -37,14 +39,21 @@ const Login = ({route, navigation}) => {
 
     return (
         <View style={styles.container}>
-            <TextInput style={styles.textInput} placeholder="Email" onChangeText={setEmail} />
-            <TextInput style={styles.textInput} placeholder="Password" onChangeText={setPassword} />
-            <Pressable style={styles.pressableButton} onPress={handleLogin} >
-                <Text style={styles.pressableText}>Login</Text>
-            </Pressable>
-            <Pressable style={styles.hyperlinkContainer} onPress={() => handleToLogin(navigation)}>
-                <Text style={{ color: 'blue', fontSize: 18}}>Signup</Text>
-            </Pressable>
+            <View style={styles.upperContainer}>
+                <Image source={shopImage} style={{ width: 125, height: 125, position: 'absolute', bottom: 0 }} />
+            </View>
+            <View style={styles.lowerContainer}>
+
+                <TextInput style={styles.textInput} placeholder="Email" onChangeText={setEmail} />
+                <TextInput style={styles.textInput} secureTextEntry={true} placeholder="Password" onChangeText={setPassword} />
+                <Pressable style={[styles.pressableButton, {backgroundColor: 'blue'}]} onPress={handleLogin} >
+                    <Text style={styles.pressableText}>Login</Text>
+                </Pressable>
+                <Pressable style={styles.hyperlinkContainer} onPress={() => handleToSignup(navigation)}>
+                    <Text style={{ color: 'blue', fontSize: 18}}>Signup</Text>
+                </Pressable>
+
+            </View>
         </View>
     )
 }
@@ -89,6 +98,24 @@ const styles = StyleSheet.create({
         marginTop: 10,
         display: 'flex',
         justifyContent: 'center',
+    },
+    upperContainer: {
+        width: '100%',
+        height: '30%',
+        position: 'absolute',
+        top: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    lowerContainer: {
+        width: '100%',
+        height: '70%',
+        position: 'absolute',
+        bottom: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 })
 

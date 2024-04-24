@@ -122,7 +122,7 @@ const MapCards = ({data, beansIcon}) => {
         sortedCards.map( item => {
             return (
                 <Card 
-                    key={item.cafeEmail} 
+                    key={sortedCards.indexOf(item)} 
                     cafeName={item.cafeName} 
                     currentScans={item.currentScans} 
                     scansNeeded={item.scansNeeded} 

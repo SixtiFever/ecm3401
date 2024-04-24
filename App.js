@@ -27,30 +27,6 @@ export default function App() {
     const notificationListener = useRef();
     const responseListener = useRef();
 
-    useEffect(() => {
-        // const nc = new NotificationController()
-
-        // nc.registerForPushNotificationsAsync().then(token => setExpoPushToken(token)).catch(err => {
-        //     console.log(err)
-        // });
-
-        // notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-        //     setNotification(notification);
-        // });
-
-        // responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-        //     console.log(response);
-        // });
-
-
-
-        // return () => {
-        //     // Notifications.removeNotificationSubscription(notificationListener.current);
-        //     // Notifications.removeNotificationSubscription(responseListener.current);
-        // };
-
-    }, [])
-
     return (
         <NavigationContainer>
             <ComponentStack />
@@ -82,7 +58,7 @@ const CafeScreenStack = () => {
                     headerRight: () => <Button title='Settings' onPress={null} />, 
                     headerLeft: () => null }} />
             <Stack.Screen name='Create Promotion' component={CreatePromotion}  />
-            <Stack.Screen name='Settings' component={CafeSettings} />
+            <Stack.Screen name='Cafe Settings' component={CafeSettings} />
         </Stack.Navigator>
     )
 }

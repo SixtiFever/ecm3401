@@ -22,7 +22,7 @@ class NotificationController {
     async sendPushNotification(expoPushToken, promotion) {
 
         // check display name containes a value, else push notification won't send
-        const displayName = auth.currentUser.displayName != undefined ? auth.currentUser.displayName : auth.currentUser.email;
+        const displayName = auth.currentUser.displayName != undefined ? auth.currentUser.displayName : 'Mangos';
 
         const message = {
           to: expoPushToken,

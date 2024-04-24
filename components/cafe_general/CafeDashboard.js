@@ -1,8 +1,11 @@
-import { View, Text, Button, StyleSheet, Pressable } from 'react-native'
+import { View, Text, Button, StyleSheet, Pressable, Image } from 'react-native'
 import { useEffect, useState } from 'react'
 import { auth, firestore } from '../../firebaseConfig'
 import { collection, doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore'
+import { Ionicons } from "@expo/vector-icons";
 
+
+const rewardIcon = require('../../assets/gift.png')
 
 const CafeDashboard = ({route, navigation}) => {
 
@@ -13,7 +16,8 @@ const CafeDashboard = ({route, navigation}) => {
         // create settings button
         navigation.setOptions({
             'headerRight': () => (
-                <Button title='Settings' onPress={() => navigation.navigate('Settings')} />
+                <SettingsPressable nav={navigation} />
+                // <Button title='Settings' onPress={() => navigation.navigate('Settings')} />
             )
         })
         
@@ -47,9 +51,11 @@ const CafeDashboard = ({route, navigation}) => {
                         { cafe && <CafeTotalData cafe={cafe} /> }
                     </View>
                 </View>
-                <Pressable style={styles.createNewPromo} onPress={() => navigation.navigate('Create Promotion', { cafeData: cafe })}>
-                    <Text style={styles.btnText}>Create new Promotion</Text>
-                </Pressable>
+                <View style={{ display: 'flex', alignItems: 'center' }}>
+                    <Pressable style={styles.pressableButton} onPress={() => navigation.navigate('Create Promotion', { cafeData: cafe })} >
+                        <Text style={styles.pressableText}>Create new promotion</Text>
+                    </Pressable>
+                </View>
             </View>
         )
         
@@ -148,8 +154,9 @@ const CurrentPromotionData = ({currentPromotion}) => {
                         <Text>Scans needed</Text>
                     </View>
                 </View>
-                <View>
-                    <Text>Active reward: {currentPromotion.reward}</Text>
+                <View style={styles.dataRow}>
+                    <Image source={rewardIcon} style={{height: 25, width: 25}} />
+                    <Text>{currentPromotion.reward}</Text>
                 </View>
             </View>
         )
@@ -163,6 +170,14 @@ const CurrentPromotionData = ({currentPromotion}) => {
         }
 }
 
+
+const SettingsPressable = ({nav}) => {
+    return (
+        <Pressable style={{ marginEnd: 20 }} onPress={() => nav.navigate('Cafe Settings')}>
+            <Ionicons name="settings-outline" size={28} color="black" />
+        </Pressable>
+    )
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -217,7 +232,19 @@ const styles = StyleSheet.create({
     dataCol: {
        display: 'flex',
        alignItems: 'center'
-    }
+    },
+    pressableButton: {
+        width: '80%',
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 6,
+        backgroundColor: 'blue',
+        marginTop: 20,
+    },
+    pressableText: {
+        color: 'white',
+    },
 })
 
 export default CafeDashboard;
